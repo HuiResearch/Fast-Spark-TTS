@@ -229,7 +229,7 @@ async def main():
     )
     wav = await engine.speak_async(
         name="长乐",
-        text="我是长乐啦。",
+        text="我是长乐啦。 <轻笑>",
         temperature=0.9,
         top_p=0.95,
         top_k=50,
