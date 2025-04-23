@@ -242,6 +242,12 @@ class AsyncSparkEngine(BaseEngine):
         """
         self.seed = seed
         self.set_seed(seed)
+        if torch_dtype == 'float16':
+            logger.warning("Spark engine does not support float16 !")
+            if torch.cuda.is_bf16_supported():
+                torch_dtype = 'bfloat16'
+            else:
+                torch_dtype = 'float32'
 
         self.audio_tokenizer = SparkTokenizer(
             model_path,
