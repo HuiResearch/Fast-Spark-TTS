@@ -61,7 +61,7 @@ def initialize_llm(
         if not is_sglang_available():
             raise ImportError("sglang is not installed. Please install it : https://docs.sglang.ai/start/install.html.")
         from .sglang_generator import SglangGenerator
-        if re.match("cuda:\d+", device):
+        if re.match(r"cuda:\d+", device):
             logger.warning(
                 "sglang目前不支持指定GPU ID，将默认使用第一个GPU。您可以通过设置环境变量CUDA_VISIBLE_DEVICES=0 来指定GPU。")
             device = "cuda"

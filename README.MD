@@ -193,9 +193,9 @@ async def main():
         max_length=32768,
         backend="vllm"
     )
-    wav = await engine.generate_voice_async(
+    wav = await engine.speak_async(
         text="这是一条测试文本。",
-        gender="female",
+        name="female",
         temperature=0.9,
         top_p=0.95,
         top_k=50,

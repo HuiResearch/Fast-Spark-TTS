@@ -4,10 +4,7 @@
 # Author  : Hui Huang
 import os
 from typing import Optional, Literal, Callable, AsyncIterator
-
 import numpy as np
-import torch
-
 from .base_engine import Engine
 from ..logger import get_logger
 
@@ -150,8 +147,10 @@ class AutoEngine(Engine):
 
     async def speak_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -161,7 +160,7 @@ class AutoEngine(Engine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> np.ndarray:
-        audio = await self._engine.speak_async(
+        parameters = dict(
             name=name,
             text=text,
             temperature=temperature,
@@ -174,12 +173,24 @@ class AutoEngine(Engine):
             split_fn=split_fn,
             **kwargs
         )
+        if self.engine_name == "spark":
+            parameters.update(
+                {
+                    "pitch": pitch,
+                    "speed": speed,
+                }
+            )
+        audio = await self._engine.speak_async(
+            **parameters,
+        )
         return audio
 
     async def speak_stream_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -189,6 +200,26 @@ class AutoEngine(Engine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> AsyncIterator[np.ndarray]:
+        parameters = dict(
+            name=name,
+            text=text,
+            temperature=temperature,
+            top_k=top_k,
+            top_p=top_p,
+            repetition_penalty=repetition_penalty,
+            max_tokens=max_tokens,
+            length_threshold=length_threshold,
+            window_size=window_size,
+            split_fn=split_fn,
+            **kwargs
+        )
+        if self.engine_name == "spark":
+            parameters.update(
+                {
+                    "pitch": pitch,
+                    "speed": speed,
+                }
+            )
         async for chunk in self._engine.speak_stream_async(
                 name=name,
                 text=text,
@@ -209,6 +240,8 @@ class AutoEngine(Engine):
             text: str,
             reference_audio,
             reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -218,7 +251,7 @@ class AutoEngine(Engine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> np.ndarray:
-        audio = await self._engine.clone_voice_async(
+        parameters = dict(
             text=text,
             reference_audio=reference_audio,
             reference_text=reference_text,
@@ -232,6 +265,16 @@ class AutoEngine(Engine):
             split_fn=split_fn,
             **kwargs
         )
+        if self.engine_name == "spark":
+            parameters.update(
+                {
+                    "pitch": pitch,
+                    "speed": speed,
+                }
+            )
+        audio = await self._engine.clone_voice_async(
+            **parameters,
+        )
         return audio
 
     async def clone_voice_stream_async(
@@ -239,6 +282,8 @@ class AutoEngine(Engine):
             text: str,
             reference_audio,
             reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -248,42 +293,10 @@ class AutoEngine(Engine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> AsyncIterator[np.ndarray]:
-        async for chunk in self._engine.clone_voice_stream_async(
-                text=text,
-                reference_audio=reference_audio,
-                reference_text=reference_text,
-                temperature=temperature,
-                top_k=top_k,
-                top_p=top_p,
-                repetition_penalty=repetition_penalty,
-                max_tokens=max_tokens,
-                length_threshold=length_threshold,
-                window_size=window_size,
-                split_fn=split_fn,
-                **kwargs
-        ):
-            yield chunk
-
-    async def generate_voice_async(
-            self,
-            text: str,
-            gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            **kwargs) -> np.ndarray:
-        audio = await self._engine.generate_voice_async(
+        parameters = dict(
             text=text,
-            gender=gender,
-            pitch=pitch,
-            speed=speed,
+            reference_audio=reference_audio,
+            reference_text=reference_text,
             temperature=temperature,
             top_k=top_k,
             top_p=top_p,
@@ -294,37 +307,15 @@ class AutoEngine(Engine):
             split_fn=split_fn,
             **kwargs
         )
-        return audio
-
-    async def generate_voice_stream_async(
-            self,
-            text: str,
-            gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            **kwargs) -> AsyncIterator[np.ndarray]:
-        async for chunk in self._engine.generate_voice_stream_async(
-                text=text,
-                gender=gender,
-                pitch=pitch,
-                speed=speed,
-                temperature=temperature,
-                top_k=top_k,
-                top_p=top_p,
-                repetition_penalty=repetition_penalty,
-                max_tokens=max_tokens,
-                length_threshold=length_threshold,
-                window_size=window_size,
-                split_fn=split_fn,
-                **kwargs
+        if self.engine_name == "spark":
+            parameters.update(
+                {
+                    "pitch": pitch,
+                    "speed": speed,
+                }
+            )
+        async for chunk in self._engine.clone_voice_stream_async(
+                **parameters
         ):
             yield chunk
 

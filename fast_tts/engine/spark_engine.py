@@ -89,6 +89,8 @@ def process_prompt(
         prompt_text: Optional[str] = None,
         global_token_ids: torch.Tensor = None,
         semantic_token_ids: torch.Tensor = None,
+        pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+        speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
 ) -> Tuple[str, torch.Tensor]:
     """
     Process input for voice cloning.
@@ -98,6 +100,8 @@ def process_prompt(
         prompt_text: Transcript of the prompt audio.
         global_token_ids: Global token IDs extracted from reference audio.
         semantic_token_ids: Semantic token IDs extracted from reference audio.
+        pitch (str): very_low | low | moderate | high | very_high
+        speed (str): very_low | low | moderate | high | very_high
 
     Returns:
         Tuple containing the formatted input prompt and global token IDs.
@@ -107,37 +111,41 @@ def process_prompt(
         [f"<|bicodec_global_{i}|>" for i in global_token_ids.squeeze()]
     )
 
-    # Prepare the input tokens for the model
+    attribte_tokens = None
+    if pitch is not None and speed is not None:
+        pitch_level_id = LEVELS_MAP[pitch]
+        pitch_label_tokens = f"<|pitch_label_{pitch_level_id}|>"
+        speed_level_id = LEVELS_MAP[speed]
+        speed_label_tokens = f"<|speed_label_{speed_level_id}|>"
+        attribte_tokens = "".join(
+            [pitch_label_tokens, speed_label_tokens]
+        )
+    audio_text = text if prompt_text is None or len(prompt_text) == 0 else (text + prompt_text)
+    inputs = [
+        TASK_TOKEN_MAP["tts"],
+        "<|start_content|>",
+        audio_text,
+        "<|end_content|>"
+    ]
+    if attribte_tokens is not None:
+        inputs.extend([
+            "<|start_style_label|>",
+            attribte_tokens,
+            "<|end_style_label|>",
+        ])
+    inputs.extend([
+        "<|start_global_token|>",
+        global_tokens,
+        "<|end_global_token|>",
+    ])
     if prompt_text is not None and len(prompt_text) > 0:
-        # Include semantic tokens when prompt text is provided
         semantic_tokens = "".join(
             [f"<|bicodec_semantic_{i}|>" for i in semantic_token_ids.squeeze()]
         )
-
-        inputs = [
-            TASK_TOKEN_MAP["tts"],
-            "<|start_content|>",
-            prompt_text,
-            text,
-            "<|end_content|>",
-            "<|start_global_token|>",
-            global_tokens,
-            "<|end_global_token|>",
+        inputs.extend([
             "<|start_semantic_token|>",
             semantic_tokens,
-        ]
-    else:
-        # Without prompt text, exclude semantic tokens
-        inputs = [
-            TASK_TOKEN_MAP["tts"],
-            "<|start_content|>",
-            text,
-            "<|end_content|>",
-            "<|start_global_token|>",
-            global_tokens,
-            "<|end_global_token|>",
-        ]
-
+        ])
     # Join all input components into a single string
     inputs = "".join(inputs)
     return inputs, global_token_ids
@@ -146,8 +154,8 @@ def process_prompt(
 def process_prompt_control(
         text: str,
         gender: Optional[Literal["female", "male"]] = "female",
-        pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-        speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
+        pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+        speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
 ):
     """
     Process input for voice creation.
@@ -161,6 +169,10 @@ def process_prompt_control(
     Return:
         str: Input prompt
     """
+    gender = gender or "female"
+    pitch = pitch or "moderate"
+    speed = speed or "moderate"
+
     assert gender in GENDER_MAP.keys()
     assert pitch in LEVELS_MAP.keys()
     assert speed in LEVELS_MAP.keys()
@@ -244,7 +256,7 @@ class AsyncSparkEngine(BaseEngine):
             batch_size=batch_size,
             wait_timeout=wait_timeout
         )
-        self.speakers = {}
+        self.speakers = {"female": {}, "male": {}}
 
         super().__init__(
             llm_model_path=os.path.join(model_path, "LLM"),
@@ -273,12 +285,15 @@ class AsyncSparkEngine(BaseEngine):
             prompt_text: Optional[str] = None,
             global_token_ids: torch.Tensor = None,
             semantic_token_ids: torch.Tensor = None,
-            gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
+            gender: Optional[Literal["female", "male"]] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
     ):
         if global_token_ids is not None and semantic_token_ids is not None:
-            return process_prompt(text, prompt_text, global_token_ids, semantic_token_ids)
+            return process_prompt(
+                text, prompt_text,
+                global_token_ids, semantic_token_ids,
+                pitch=pitch, speed=speed)
         else:
             return process_prompt_control(text, gender, pitch, speed)
 
@@ -354,6 +369,8 @@ class AsyncSparkEngine(BaseEngine):
             global_tokens: torch.Tensor,
             semantic_tokens: torch.Tensor,
             reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -376,6 +393,8 @@ class AsyncSparkEngine(BaseEngine):
                 prompt_text=reference_text,
                 global_token_ids=global_tokens,
                 semantic_token_ids=semantic_tokens,
+                pitch=pitch,
+                speed=speed,
             )
             generated = await self._generate_audio_tokens(
                 prompt=prompt,
@@ -447,6 +466,8 @@ class AsyncSparkEngine(BaseEngine):
             global_tokens: torch.Tensor,
             semantic_tokens: torch.Tensor,
             reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -491,6 +512,8 @@ class AsyncSparkEngine(BaseEngine):
                 prompt_text=reference_text,
                 global_token_ids=global_tokens,
                 semantic_token_ids=semantic_tokens,
+                pitch=pitch,
+                speed=speed,
             )
             prompts.append(prompt)
 
@@ -555,14 +578,18 @@ class AsyncSparkEngine(BaseEngine):
     async def add_speaker(self, name: str, audio, reference_text: Optional[str] = None):
         if name in self.speakers:
             logger.warning(f"{name} 音频已存在，将使用新的音频覆盖。")
-        tokens = await self._tokenize(
-            audio
-        )
-        self.speakers[name] = {
-            "global_tokens": tokens['global_tokens'].detach().cpu(),
-            "semantic_tokens": tokens['semantic_tokens'].detach().cpu(),
-            "reference_text": reference_text
-        }
+
+        if name not in ["female", "male"]:
+            tokens = await self._tokenize(
+                audio
+            )
+            self.speakers[name] = {
+                "global_tokens": tokens['global_tokens'].detach().cpu(),
+                "semantic_tokens": tokens['semantic_tokens'].detach().cpu(),
+                "reference_text": reference_text
+            }
+        else:
+            self.speakers[name] = {}
 
     async def delete_speaker(self, name: str):
         if name not in self.speakers:
@@ -570,171 +597,12 @@ class AsyncSparkEngine(BaseEngine):
             return
         self.speakers.pop(name)
 
-    async def speak_async(
-            self,
-            name: str,
-            text: str,
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            **kwargs) -> np.ndarray:
-        if name not in self.speakers:
-            err_msg = f"{name} 角色不存在。"
-            logger.error(err_msg)
-            raise ValueError(err_msg)
-        self.set_seed(seed=self.seed)
-        speaker = self.speakers[name]
-        audio = await self._clone_voice_by_tokens(
-            text=text,
-            global_tokens=speaker['global_tokens'],
-            semantic_tokens=speaker['semantic_tokens'],
-            reference_text=speaker['reference_text'],
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
-            repetition_penalty=repetition_penalty,
-            max_tokens=max_tokens,
-            length_threshold=length_threshold,
-            window_size=window_size,
-            split_fn=split_fn,
-            **kwargs
-        )
-        return (audio * 32767).astype(np.int16)
-
-    async def speak_stream_async(
-            self,
-            name: str,
-            text: str,
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            audio_chunk_duration: float = 1.0,
-            max_audio_chunk_duration: float = 8.0,
-            audio_chunk_size_scale_factor: float = 2.0,
-            audio_chunk_overlap_duration: float = 0.1,
-            **kwargs) -> AsyncIterator[np.ndarray]:
-        if name not in self.speakers:
-            err_msg = f"{name} 角色不存在。"
-            logger.error(err_msg)
-            raise ValueError(err_msg)
-        speaker = self.speakers[name]
-        self.set_seed(seed=self.seed)
-        async for chunk in self._clone_voice_stream_by_tokens(
-                text=text,
-                global_tokens=speaker['global_tokens'],
-                semantic_tokens=speaker['semantic_tokens'],
-                reference_text=speaker['reference_text'],
-                temperature=temperature,
-                top_k=top_k,
-                top_p=top_p,
-                repetition_penalty=repetition_penalty,
-                max_tokens=max_tokens,
-                length_threshold=length_threshold,
-                window_size=window_size,
-                split_fn=split_fn,
-                audio_chunk_duration=audio_chunk_duration,
-                max_audio_chunk_duration=max_audio_chunk_duration,
-                audio_chunk_size_scale_factor=audio_chunk_size_scale_factor,
-                audio_chunk_overlap_duration=audio_chunk_overlap_duration,
-                **kwargs
-        ):
-            yield (chunk * 32767).astype(np.int16)
-
-    async def clone_voice_async(
-            self,
-            text: str,
-            reference_audio,
-            reference_text: Optional[str] = None,
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            **kwargs) -> np.ndarray:
-        self.set_seed(seed=self.seed)
-        tokens = await self._tokenize(
-            reference_audio
-        )
-        audio = await self._clone_voice_by_tokens(
-            text=text,
-            global_tokens=tokens['global_tokens'],
-            semantic_tokens=tokens['semantic_tokens'],
-            reference_text=reference_text,
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
-            repetition_penalty=repetition_penalty,
-            max_tokens=max_tokens,
-            length_threshold=length_threshold,
-            window_size=window_size,
-            split_fn=split_fn,
-            **kwargs
-        )
-        return (audio * 32767).astype(np.int16)
-
-    async def clone_voice_stream_async(
-            self,
-            text: str,
-            reference_audio,
-            reference_text: Optional[str] = None,
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            audio_chunk_duration: float = 1.0,
-            max_audio_chunk_duration: float = 8.0,
-            audio_chunk_size_scale_factor: float = 2.0,
-            audio_chunk_overlap_duration: float = 0.1,
-            **kwargs) -> AsyncIterator[np.ndarray]:
-
-        self.set_seed(seed=self.seed)
-        tokens = await self._tokenize(
-            reference_audio
-        )
-        async for chunk in self._clone_voice_stream_by_tokens(
-                text=text,
-                global_tokens=tokens['global_tokens'],
-                semantic_tokens=tokens['semantic_tokens'],
-                reference_text=reference_text,
-                temperature=temperature,
-                top_k=top_k,
-                top_p=top_p,
-                repetition_penalty=repetition_penalty,
-                max_tokens=max_tokens,
-                length_threshold=length_threshold,
-                window_size=window_size,
-                split_fn=split_fn,
-                audio_chunk_duration=audio_chunk_duration,
-                max_audio_chunk_duration=max_audio_chunk_duration,
-                audio_chunk_size_scale_factor=audio_chunk_size_scale_factor,
-                audio_chunk_overlap_duration=audio_chunk_overlap_duration,
-                **kwargs
-        ):
-            yield (chunk * 32767).astype(np.int16)
-
-    async def generate_voice_async(
+    async def _control_generate(
             self,
             text: str,
             gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -745,15 +613,13 @@ class AsyncSparkEngine(BaseEngine):
             split_fn: Optional[Callable[[str], list[str]]] = None,
             acoustic_tokens: Optional[SparkAcousticTokens | str] = None,
             return_acoustic_tokens: bool = False,
-            **kwargs) -> np.ndarray | tuple[np.ndarray, SparkAcousticTokens]:
-
+            **kwargs):
         segments = self.split_text(
             text,
             window_size=window_size,
             split_fn=split_fn,
             length_threshold=length_threshold
         )
-        self.set_seed(seed=self.seed)
 
         async def generate_audio(
                 segment: str,
@@ -808,17 +674,85 @@ class AsyncSparkEngine(BaseEngine):
             generated_segments = await asyncio.gather(*tasks)
             audios = audios + [out['audio'] for out in generated_segments]
         final_audio = np.concatenate(audios, axis=0)
-        output = (final_audio * 32767).astype(np.int16)
         if return_acoustic_tokens:
-            return output, acoustic_tokens
-        return output
+            return final_audio, acoustic_tokens
+        return final_audio
 
-    async def generate_voice_stream_async(
+    async def speak_async(
+            self,
+            text: str,
+            name: str = "female",
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            temperature: float = 0.9,
+            top_k: int = 50,
+            top_p: float = 0.95,
+            repetition_penalty: float = 1.0,
+            max_tokens: int = 4096,
+            length_threshold: int = 50,
+            window_size: int = 50,
+            split_fn: Optional[Callable[[str], list[str]]] = None,
+            acoustic_tokens: Optional[SparkAcousticTokens | str] = None,
+            return_acoustic_tokens: bool = False,
+            **kwargs) -> np.ndarray | tuple[np.ndarray, SparkAcousticTokens]:
+        name = name or "female"
+        if name not in self.speakers:
+            err_msg = f"{name} 角色不存在。"
+            logger.error(err_msg)
+            raise ValueError(err_msg)
+        self.set_seed(seed=self.seed)
+        speaker = self.speakers[name]
+        acoustic_tokens = None
+        if name in ["female", "male"]:
+            output = await self._control_generate(
+                text=text,
+                gender=name,
+                pitch=pitch,
+                speed=speed,
+                temperature=temperature,
+                top_k=top_k,
+                top_p=top_p,
+                repetition_penalty=repetition_penalty,
+                max_tokens=max_tokens,
+                length_threshold=length_threshold,
+                window_size=window_size,
+                split_fn=split_fn,
+                acoustic_tokens=acoustic_tokens,
+                return_acoustic_tokens=return_acoustic_tokens,
+                **kwargs
+            )
+            if return_acoustic_tokens and isinstance(output, tuple):
+                audio = output[0]
+                acoustic_tokens = output[1]
+            else:
+                audio = output
+        else:
+            audio = await self._clone_voice_by_tokens(
+                text=text,
+                global_tokens=speaker['global_tokens'],
+                semantic_tokens=speaker['semantic_tokens'],
+                reference_text=speaker['reference_text'],
+                temperature=temperature,
+                top_k=top_k,
+                top_p=top_p,
+                repetition_penalty=repetition_penalty,
+                max_tokens=max_tokens,
+                length_threshold=length_threshold,
+                window_size=window_size,
+                split_fn=split_fn,
+                **kwargs
+            )
+        audio = (audio * 32767).astype(np.int16)
+        if acoustic_tokens is not None:
+            return audio, acoustic_tokens
+        return audio
+
+    async def _control_stream_generate(
             self,
             text: str,
             gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -833,12 +767,8 @@ class AsyncSparkEngine(BaseEngine):
             audio_chunk_overlap_duration: float = 0.1,
             acoustic_tokens: Optional[SparkAcousticTokens | str] = None,
             return_acoustic_tokens: bool = False,
-            **kwargs) -> AsyncIterator[np.ndarray | SparkAcousticTokens]:
-        """
-        若是 return_acoustic_tokens 设置为True，在最后会yield一个SparkAcousticTokens。
-        里面存储的声学tokens可以传入，第二次生成就会保持一样的音色。
-        """
-        self.set_seed(seed=self.seed)
+            **kwargs
+    ):
         if audio_chunk_duration < 0.5:
             err_msg = "audio_chunk_duration at least 0.5 seconds"
             logger.error(err_msg)
@@ -919,7 +849,7 @@ class AsyncSparkEngine(BaseEngine):
                         last_chunk_audio=last_audio,
                         overlap_chunk_size=overlap_chunk_size,
                     )
-                    yield (processed['yield_audio'] * 32767).astype(np.int16)
+                    yield processed['yield_audio']
 
                     audio_index = processed['audio_idx']
                     last_audio = processed['last_chunk_audio']
@@ -940,11 +870,178 @@ class AsyncSparkEngine(BaseEngine):
                 overlap_chunk_size=overlap_chunk_size,
             )
 
-            yield (processed['yield_audio'] * 32767).astype(np.int16)
+            yield processed['yield_audio']
             last_audio = processed['last_chunk_audio']
 
         if last_audio is not None:
-            yield (last_audio[-cross_fade_samples:] * 32767).astype(np.int16)
+            yield last_audio[-cross_fade_samples:]
 
         if return_acoustic_tokens:
             yield acoustic_tokens
+
+    async def speak_stream_async(
+            self,
+            text: str,
+            name: str = "female",
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            temperature: float = 0.9,
+            top_k: int = 50,
+            top_p: float = 0.95,
+            repetition_penalty: float = 1.0,
+            max_tokens: int = 4096,
+            length_threshold: int = 50,
+            window_size: int = 50,
+            split_fn: Optional[Callable[[str], list[str]]] = None,
+            audio_chunk_duration: float = 1.0,
+            max_audio_chunk_duration: float = 8.0,
+            audio_chunk_size_scale_factor: float = 2.0,
+            audio_chunk_overlap_duration: float = 0.1,
+            acoustic_tokens: Optional[SparkAcousticTokens | str] = None,
+            return_acoustic_tokens: bool = False,
+            **kwargs) -> AsyncIterator[np.ndarray | SparkAcousticTokens]:
+        name = name or "female"
+        if name not in self.speakers:
+            err_msg = f"{name} 角色不存在。"
+            logger.error(err_msg)
+            raise ValueError(err_msg)
+        self.set_seed(seed=self.seed)
+        speaker = self.speakers[name]
+        out_acoustic_tokens = None
+        if name in ['female', 'male']:
+            async for chunk in self._control_stream_generate(
+                    text=text,
+                    gender=name,
+                    pitch=pitch,
+                    speed=speed,
+                    temperature=temperature,
+                    top_k=top_k,
+                    top_p=top_p,
+                    repetition_penalty=repetition_penalty,
+                    max_tokens=max_tokens,
+                    length_threshold=length_threshold,
+                    window_size=window_size,
+                    split_fn=split_fn,
+                    audio_chunk_duration=audio_chunk_duration,
+                    max_audio_chunk_duration=max_audio_chunk_duration,
+                    audio_chunk_size_scale_factor=audio_chunk_size_scale_factor,
+                    audio_chunk_overlap_duration=audio_chunk_overlap_duration,
+                    acoustic_tokens=acoustic_tokens,
+                    return_acoustic_tokens=return_acoustic_tokens,
+            ):
+                if isinstance(chunk, SparkAcousticTokens):
+                    out_acoustic_tokens = chunk
+                else:
+                    yield (chunk * 32767).astype(np.int16)
+        else:
+            async for chunk in self._clone_voice_stream_by_tokens(
+                    text=text,
+                    global_tokens=speaker['global_tokens'],
+                    semantic_tokens=speaker['semantic_tokens'],
+                    reference_text=speaker['reference_text'],
+                    pitch=pitch,
+                    speed=speed,
+                    temperature=temperature,
+                    top_k=top_k,
+                    top_p=top_p,
+                    repetition_penalty=repetition_penalty,
+                    max_tokens=max_tokens,
+                    length_threshold=length_threshold,
+                    window_size=window_size,
+                    split_fn=split_fn,
+                    audio_chunk_duration=audio_chunk_duration,
+                    max_audio_chunk_duration=max_audio_chunk_duration,
+                    audio_chunk_size_scale_factor=audio_chunk_size_scale_factor,
+                    audio_chunk_overlap_duration=audio_chunk_overlap_duration,
+                    **kwargs
+            ):
+                yield (chunk * 32767).astype(np.int16)
+        if out_acoustic_tokens is not None:
+            yield out_acoustic_tokens
+
+    async def clone_voice_async(
+            self,
+            text: str,
+            reference_audio,
+            reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            temperature: float = 0.9,
+            top_k: int = 50,
+            top_p: float = 0.95,
+            repetition_penalty: float = 1.0,
+            max_tokens: int = 4096,
+            length_threshold: int = 50,
+            window_size: int = 50,
+            split_fn: Optional[Callable[[str], list[str]]] = None,
+            **kwargs) -> np.ndarray:
+        self.set_seed(seed=self.seed)
+        tokens = await self._tokenize(
+            reference_audio
+        )
+        audio = await self._clone_voice_by_tokens(
+            text=text,
+            global_tokens=tokens['global_tokens'],
+            semantic_tokens=tokens['semantic_tokens'],
+            reference_text=reference_text,
+            pitch=pitch,
+            speed=speed,
+            temperature=temperature,
+            top_k=top_k,
+            top_p=top_p,
+            repetition_penalty=repetition_penalty,
+            max_tokens=max_tokens,
+            length_threshold=length_threshold,
+            window_size=window_size,
+            split_fn=split_fn,
+            **kwargs
+        )
+        return (audio * 32767).astype(np.int16)
+
+    async def clone_voice_stream_async(
+            self,
+            text: str,
+            reference_audio,
+            reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            temperature: float = 0.9,
+            top_k: int = 50,
+            top_p: float = 0.95,
+            repetition_penalty: float = 1.0,
+            max_tokens: int = 4096,
+            length_threshold: int = 50,
+            window_size: int = 50,
+            split_fn: Optional[Callable[[str], list[str]]] = None,
+            audio_chunk_duration: float = 1.0,
+            max_audio_chunk_duration: float = 8.0,
+            audio_chunk_size_scale_factor: float = 2.0,
+            audio_chunk_overlap_duration: float = 0.1,
+            **kwargs) -> AsyncIterator[np.ndarray]:
+
+        self.set_seed(seed=self.seed)
+        tokens = await self._tokenize(
+            reference_audio
+        )
+        async for chunk in self._clone_voice_stream_by_tokens(
+                text=text,
+                global_tokens=tokens['global_tokens'],
+                semantic_tokens=tokens['semantic_tokens'],
+                reference_text=reference_text,
+                pitch=pitch,
+                speed=speed,
+                temperature=temperature,
+                top_k=top_k,
+                top_p=top_p,
+                repetition_penalty=repetition_penalty,
+                max_tokens=max_tokens,
+                length_threshold=length_threshold,
+                window_size=window_size,
+                split_fn=split_fn,
+                audio_chunk_duration=audio_chunk_duration,
+                max_audio_chunk_duration=max_audio_chunk_duration,
+                audio_chunk_size_scale_factor=audio_chunk_size_scale_factor,
+                audio_chunk_overlap_duration=audio_chunk_overlap_duration,
+                **kwargs
+        ):
+            yield (chunk * 32767).astype(np.int16)

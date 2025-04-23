@@ -77,13 +77,12 @@ async def load_roles(async_engine: AutoEngine, role_dir: Optional[str] = None):
 async def warmup_engine(async_engine: AutoEngine):
     logger.info("Warming up...")
     if async_engine.engine_name == 'spark':
-        await async_engine.generate_voice_async(
+        await async_engine.speak_async(
             text="测试音频",
             max_tokens=128
         )
     elif async_engine.engine_name == 'orpheus':
         await async_engine.speak_async(
-            name='tara',
             text="test audio.",
             max_tokens=128
         )

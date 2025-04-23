@@ -195,6 +195,8 @@ class AsyncMega3Engine(BaseEngine):
             text: str,
             reference_audio: tuple,
             reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -210,6 +212,8 @@ class AsyncMega3Engine(BaseEngine):
         self.set_seed(seed=self.seed)
         assert len(
             reference_audio) == 2, "The reference audio for MegaTTS3 requires two files to be provided: a WAV audio file and an encoded NPY file."
+        if pitch is not None or speed is not None:
+            logger.warning("MegaTTS does not support adjusting pitch and speed.")
         resource_context = self.audio_tokenizer.preprocess(
             audio=reference_audio[0],
             latent_file=reference_audio[1],
@@ -252,8 +256,10 @@ class AsyncMega3Engine(BaseEngine):
 
     async def speak_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -266,6 +272,10 @@ class AsyncMega3Engine(BaseEngine):
             p_w: float = 1.6,
             t_w: float = 2.5,
             **kwargs) -> np.ndarray:
+        if pitch is not None or speed is not None:
+            logger.warning("MegaTTS does not support adjusting pitch and speed.")
+        if name is None and len(self.speakers) > 0:
+            name = list(self.speakers.keys())[0]
         if name not in self.speakers:
             err_msg = f"{name} 角色不存在。"
             logger.error(err_msg)

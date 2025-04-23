@@ -8,63 +8,6 @@ from typing import Literal, Optional, List
 from pydantic import BaseModel, Field
 
 
-# 定义 TTS 合成请求体（JSON 格式）
-class TTSRequest(BaseModel):
-    text: str = Field(..., description="The text to generate audio for")
-    gender: Literal["female", "male"] = Field(
-        default="female",
-        description="Controls the gender of speech synthesis. Options are 'female' or 'male'."
-    )
-    pitch: Literal["very_low", "low", "moderate", "high", "very_high"] = Field(
-        default="moderate",
-        description="Specifies the pitch level for the generated audio. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
-    )
-    speed: Literal["very_low", "low", "moderate", "high", "very_high"] = Field(
-        default="moderate",
-        description="Specifies the speed level of the audio output. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
-    )
-    temperature: float = Field(
-        default=0.9,
-        description="Controls the randomness of the audio generation process. A higher temperature leads to more diverse outputs."
-    )
-    top_k: int = Field(
-        default=50,
-        description="Limits the number of highest probability vocabulary tokens to consider during generation."
-    )
-    top_p: float = Field(
-        default=0.95,
-        description="Nucleus sampling parameter: only the top tokens with a cumulative probability of 'top_p' are considered."
-    )
-    repetition_penalty: float = Field(
-        default=1.0,
-        description="Controls the repetition penalty applied to the generated text. "
-                    "Higher values penalize repeated words and phrases."
-    )
-    max_tokens: int = Field(
-        default=4096,
-        description="The maximum number of tokens to generate in the output."
-    )
-    length_threshold: int = Field(
-        default=50,
-        description="The length threshold for text segmentation. If the input text exceeds this threshold, it will be split into multiple segments for synthesis."
-    )
-    window_size: int = Field(
-        default=50,
-        description="Specifies the window size of each segment when splitting the text. It defines how many tokens are included in each segment for synthesis."
-    )
-    stream: bool = Field(
-        default=False,
-        description="Determines whether the audio output should be streamed in real-time (True) or returned after complete generation (False)."
-    )
-    response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"] = Field(
-        default="mp3",
-        description=(
-            "The format in which to return audio. Supported formats: mp3, opus, aac, flac, wav, pcm. "
-            "Note: PCM returns raw 16-bit samples without headers and AAC is not currently supported."
-        )
-    )
-
-
 # 定义支持多种方式传入参考音频的请求协议
 class CloneRequest(BaseModel):
     text: str = Field(
@@ -81,6 +24,14 @@ class CloneRequest(BaseModel):
     reference_text: Optional[str] = Field(
         default=None,
         description="Optional transcript or description corresponding to the reference audio."
+    )
+    pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Field(
+        default=None,
+        description="Specifies the pitch level for the generated audio. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
+    )
+    speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Field(
+        default=None,
+        description="Specifies the speed level of the audio output. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
     )
     temperature: float = Field(
         default=0.9,
@@ -130,13 +81,21 @@ class CloneRequest(BaseModel):
 
 # 定义角色语音合成请求体
 class SpeakRequest(BaseModel):
-    name: str = Field(
-        ...,
-        description="The name of the voice character to be used for speech synthesis."
-    )
     text: str = Field(
         ...,
         description="The text to generate audio for."
+    )
+    name: Optional[str] = Field(
+        default=None,
+        description="The name of the voice character to be used for speech synthesis."
+    )
+    pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Field(
+        default=None,
+        description="Specifies the pitch level for the generated audio. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
+    )
+    speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Field(
+        default=None,
+        description="Specifies the speed level of the audio output. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
     )
     temperature: float = Field(
         default=0.9,

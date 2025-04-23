@@ -480,10 +480,7 @@
 
 <div class="container">
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('generate')" data-tab="generate">
-            <i class="fas fa-microphone"></i> 语音合成
-        </button>
-        <button class="tab" onclick="switchTab('clone')" data-tab="clone">
+        <button class="tab active" onclick="switchTab('clone')" data-tab="clone">
             <i class="fas fa-copy"></i> 声音克隆
         </button>
         <button class="tab" onclick="switchTab('clone_role')" data-tab="clone_role">
@@ -493,122 +490,8 @@
             <i class="fas fa-users"></i> 多角色合成
         </button>
     </div>
-
-    <!-- 语音合成 -->
-    <div id="generate-tab" class="tab-content active">
-        <div class="card">
-            <h3>文本转语音</h3>
-            <div id="generate-alert" class="alert"></div>
-            <form id="generate-form">
-                <div class="form-group">
-                    <label for="generate-text">输入文本</label>
-                    <textarea id="generate-text" name="text" placeholder="请输入要转换为语音的文本内容..." required>身临其境，换新体验。塑造开源语音合成新范式，让智能语音更自然。</textarea>
-                </div>
-                <div class="form-group">
-                    <label for="generate-gender">性别</label>
-                    <select id="generate-gender" name="gender">
-                        <option value="male">男性</option>
-                        <option value="female">女性</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="generate-pitch">音调</label>
-                    <select id="generate-pitch" name="pitch">
-                        <option value="very_low">极低</option>
-                        <option value="low">低</option>
-                        <option value="moderate" selected>中</option>
-                        <option value="high">高</option>
-                        <option value="very_high">极高</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="generate-speed">语速</label>
-                    <select id="generate-speed" name="speed">
-                        <option value="very_low">极慢</option>
-                        <option value="low">慢</option>
-                        <option value="moderate" selected>中</option>
-                        <option value="high">快</option>
-                        <option value="very_high">极快</option>
-                    </select>
-                </div>
-                <div class="advanced-options">
-                    <div class="advanced-header" onclick="toggleAdvanced('generate-advanced')">
-                        <h4>生成参数设置</h4>
-                        <i id="generate-advanced-icon" class="fas fa-chevron-down"></i>
-                    </div>
-                    <div id="generate-advanced" class="advanced-content">
-                        <div class="form-group">
-                            <label for="generate-temperature">Temperature</label>
-                            <div class="range-control">
-                                <input type="range" id="generate-temperature" name="temperature" min="0" max="1"
-                                       step="0.1" value="0.9" oninput="updateRangeValue(this)">
-                                <span id="generate-temperature-value">0.9</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="generate-top-p">Top P</label>
-                            <div class="range-control">
-                                <input type="range" id="generate-top-p" name="top_p" min="0" max="1" step="0.05"
-                                       value="0.95" oninput="updateRangeValue(this)">
-                                <span id="generate-top-p-value">0.95</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="generate-top-k">Top K</label>
-                            <div class="range-control">
-                                <input type="range" id="generate-top-k" name="top_k" min="1" max="100" step="1"
-                                       value="50" oninput="updateRangeValue(this)">
-                                <span id="generate-top-k-value">50</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="generate-repetition-penalty">Repetition Penalty</label>
-                            <div class="range-control">
-                                <input type="range" id="generate-repetition-penalty" name="repetition_penalty" min="0"
-                                       max="2" step="0.01"
-                                       value="1.0" oninput="updateRangeValue(this)">
-                                <span id="generate-repetition-penalty-value">1.0</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="generate-max-tokens">Max Tokens</label>
-                            <div class="range-control">
-                                <input type="range" id="generate-max-tokens" name="max_tokens" min="64" max="8192"
-                                       step="32" value="4096" oninput="updateRangeValue(this)">
-                                <span id="generate-max-tokens-value">4096</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="generate-loading" class="loading">
-                    <div class="spinner"></div>
-                    <p>正在生成语音，请稍候...</p>
-                    <div class="timer-container">
-                        <i class="fas fa-clock timer-icon"></i>
-                        <span id="generate-timer" class="timer-display">00:00:00</span>
-                    </div>
-                </div>
-                <div class="button-container">
-                    <button type="submit">
-                        <i class="fas fa-play"></i> 生成语音
-                    </button>
-                </div>
-            </form>
-            <div id="generate-result" class="result-container">
-                <h4>生成结果</h4>
-                <div id="generate-process-time" class="processing-time"></div>
-                <audio id="generate-audio" class="audio-player" controls autoplay></audio>
-                <div class="button-container" style="margin-top: 15px;">
-                    <button id="generate-download" class="download-btn">
-                        <i class="fas fa-download"></i> 下载音频
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- 声音克隆 -->
-    <div id="clone-tab" class="tab-content">
+    <div id="clone-tab" class="tab-content active">
         <div class="card">
             <h3>声音克隆</h3>
             <div id="clone-alert" class="alert"></div>
@@ -648,6 +531,26 @@
                                onchange="handleFileSelect(this)">
                         <p id="clone-latent-file-name" class="file-name"></p>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label for="clone-pitch">音调 (仅支持SparkTTS)</label>
+                    <select id="clone-pitch" name="pitch">
+                        <option value="very_low">极低</option>
+                        <option value="low">低</option>
+                        <option value="moderate" selected>中</option>
+                        <option value="high">高</option>
+                        <option value="very_high">极高</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="clone-speed">语速 (仅支持SparkTTS)</label>
+                    <select id="clone-speed" name="speed">
+                        <option value="very_low">极慢</option>
+                        <option value="low">慢</option>
+                        <option value="moderate" selected>中</option>
+                        <option value="high">快</option>
+                        <option value="very_high">极快</option>
+                    </select>
                 </div>
                 <div class="advanced-options">
                     <div class="advanced-header" onclick="toggleAdvanced('clone-advanced')">
@@ -740,6 +643,26 @@
                     <label for="clone-role-select">选择音频角色</label>
                     <select id="clone-role-select" name="role_id" required>
                         <option value="">加载中...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="clone-role-pitch">音调 (仅支持SparkTTS)</label>
+                    <select id="clone-role-pitch" name="pitch">
+                        <option value="very_low">极低</option>
+                        <option value="low">低</option>
+                        <option value="moderate" selected>中</option>
+                        <option value="high">高</option>
+                        <option value="very_high">极高</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="clone-role-speed">语速 (仅支持SparkTTS)</label>
+                    <select id="clone-role-speed" name="speed">
+                        <option value="very_low">极慢</option>
+                        <option value="low">慢</option>
+                        <option value="moderate" selected>中</option>
+                        <option value="high">快</option>
+                        <option value="very_high">极快</option>
                     </select>
                 </div>
                 <div class="advanced-options">
@@ -997,50 +920,6 @@
         }, 5000);
     }
 
-    // 语音合成表单提交（始终采用非流式方式）
-    document.getElementById('generate-form').addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
-        data.response_format = "mp3";
-
-        const loading = document.getElementById('generate-loading');
-        const result = document.getElementById('generate-result');
-        loading.style.display = 'block';
-        result.style.display = 'none';
-
-        const startTime = startTimer('generate');
-
-        try {
-            const response = await fetch('/generate_voice', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || '语音生成失败');
-            }
-            const blob = await response.blob();
-            stopTimer('generate', startTime);
-            showAlert('generate', '语音生成成功', 'success');
-            const audio = document.getElementById('generate-audio');
-            audio.src = URL.createObjectURL(blob);
-            document.getElementById('generate-download').onclick = function () {
-                const link = document.createElement('a');
-                link.href = audio.src;
-                link.download = 'generated_voice.mp3';
-                link.click();
-            };
-            result.style.display = 'block';
-        } catch (error) {
-            stopTimer('generate', startTime);
-            showAlert('generate', `生成失败: ${error.message}`, 'error');
-        } finally {
-            loading.style.display = 'none';
-        }
-    });
-
     // 声音克隆表单提交（始终采用非流式方式）
     document.getElementById('clone-form').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -1052,6 +931,8 @@
         const formData = new FormData();
         formData.append('text', document.getElementById('clone-text').value);
         formData.append('reference_text', document.getElementById('clone-reference-text').value);
+        formData.append('pitch', document.getElementById('clone-pitch').value);
+        formData.append('speed', document.getElementById('clone-speed').value)
         formData.append('response_format', 'mp3');
         formData.append('temperature', document.getElementById('clone-temperature').value);
         formData.append('top_p', document.getElementById('clone-top-p').value);

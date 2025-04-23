@@ -13,7 +13,7 @@ def generate_voice():
     text = "身临其境，换新体验。塑造开源语音合成新范式，让智能语音更自然。"
     payload = {
         "text": text,
-        "gender": "male",
+        "name": "male",
         "pitch": "moderate",
         "speed": "moderate",
         "temperature": 0.9,
@@ -21,7 +21,7 @@ def generate_voice():
         "top_k": 50,
         "max_tokens": 2048
     }
-    response = requests.post(f"{BASE_URL}/generate_voice", json=payload)
+    response = requests.post(f"{BASE_URL}/speak", json=payload)
     if response.status_code == 200:
         with open("generate_voice.mp3", "wb") as f:
             f.write(response.content)

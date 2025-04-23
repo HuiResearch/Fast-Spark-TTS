@@ -124,29 +124,60 @@ def split_text(
 def parse_multi_speaker_text(text, speakers):
     """
     解析文本，将文本分割为多个角色及其对应的台词。
+    支持可选的 pitch 和 speed 属性。
 
     参数:
-      text (str): 待解析的文本，文本中各段台词前以 <role:角色名> 标识。
-      speakers (list): 允许的角色名称列表，只有在列表中的角色会被解析。
+    text (str): 待解析的文本，文本中各段台词前以 <role:角色名,pitch:值,speed:值> 标识。
+    speakers (list): 允许的角色名称列表，只有在列表中的角色会被解析。
 
     返回:
-      list: 每个元素为一个字典，包含 'name'（角色名称）和 'text'（台词文本）。
+    list: 每个元素为一个字典，包含 'name'（角色名称）, 'text'（台词文本）,
+         'pitch'（音调）和 'speed'（速度）。
     """
-    # 使用正则表达式分割文本，其中 '([^>]+)' 捕获 < > 中的角色名
-    parts = re.split(r'<role:([^>]+)>', text)
-    result = []
 
-    # 如果文本以 <角色名> 开始，则 parts[0] 可能为空
-    # parts 的排列方式为：[前置文本, 角色1, 台词1, 角色2, 台词2, …]
-    # 从索引 1 开始，每隔两个取一次：索引1为角色名，索引2为对应的文本
-    for i in range(1, len(parts), 2):
+    # 允许的属性值
+    valid_attributes = ["very_low", "low", "moderate", "high", "very_high"]
+
+    # 使用正则表达式匹配标记和标记后的文本
+    pattern = r'<role:([^,>]+)(?:,pitch:([^,>]+))?(?:,speed:([^,>]+))?>'
+    parts = re.split(pattern, text)
+
+    result = []
+    # parts 的排列方式为：[前置文本, 角色1, pitch1, speed1, 台词1, 角色2, pitch2, speed2, 台词2, ...]
+
+    i = 1
+    while i < len(parts):
+        if i + 3 >= len(parts):
+            break
+
         role = parts[i].strip()
-        # 仅处理允许的角色
+        pitch = parts[i + 1].strip() if parts[i + 1] else None
+        speed = parts[i + 2].strip() if parts[i + 2] else None
+        dialogue = parts[i + 3].strip()
+
+        # 验证角色是否在允许列表中
         if role not in speakers:
             logger.warning(f"{role}并不在已有的角色列表（{', '.join(speakers)}）中，将跳过该角色的文本。")
+            i += 4
             continue
-        # 获取角色后面的文本，如果存在
-        dialogue = parts[i + 1].strip() if i + 1 < len(parts) else ""
+
+        # 验证pitch和speed的值是否合法
+        if pitch and pitch not in valid_attributes:
+            logger.warning(f"属性pitch的值'{pitch}'不合法，将设为None。合法值为: {', '.join(valid_attributes)}")
+            pitch = None
+
+        if speed and speed not in valid_attributes:
+            logger.warning(f"属性speed的值'{speed}'不合法，将设为None。合法值为: {', '.join(valid_attributes)}")
+            speed = None
+
         if dialogue:
-            result.append({"name": role, "text": dialogue})
+            result.append({
+                "name": role,
+                "text": dialogue,
+                "pitch": pitch,
+                "speed": speed
+            })
+
+        i += 4
+
     return result

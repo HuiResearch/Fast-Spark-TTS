@@ -300,8 +300,10 @@ class AsyncOrpheusEngine(BaseEngine):
 
     async def speak_stream_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -311,7 +313,8 @@ class AsyncOrpheusEngine(BaseEngine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> AsyncIterator[np.ndarray]:
-
+        if pitch is not None or speed is not None:
+            logger.warning("OrpheusTTS does not support adjusting pitch and speed.")
         self.set_seed(seed=self.seed)
         segments = self.split_text(
             text=text,
@@ -345,8 +348,10 @@ class AsyncOrpheusEngine(BaseEngine):
 
     async def speak_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -356,6 +361,8 @@ class AsyncOrpheusEngine(BaseEngine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> np.ndarray:
+        if pitch is not None or speed is not None:
+            logger.warning("OrpheusTTS does not support adjusting pitch and speed.")
         self.set_seed(seed=self.seed)
         segments = self.split_text(
             text=text,

@@ -10,7 +10,7 @@ import httpx
 import numpy as np
 from fastapi import HTTPException, Request, APIRouter, UploadFile, File, Form, Depends
 from fastapi.responses import StreamingResponse, JSONResponse, Response, FileResponse
-from .protocol import TTSRequest, CloneRequest, SpeakRequest, MultiSpeakRequest
+from .protocol import CloneRequest, SpeakRequest, MultiSpeakRequest
 from .utils.audio_writer import StreamingAudioWriter
 from ..engine import AutoEngine
 from ..logger import get_logger
@@ -50,85 +50,6 @@ async def get_web():
     return FileResponse("templates/index.html")
 
 
-# TTS 合成接口：接收 JSON 请求，返回合成语音（wav 格式）
-@base_router.post("/generate_voice")
-async def generate_voice(req: TTSRequest, raw_request: Request):
-    engine: AutoEngine = raw_request.app.state.engine
-    if engine.engine_name in ['orpheus', 'mega']:
-        err_msg = f"`{engine.engine_name}` 暂不支持控制语音合成."
-        logger.error(err_msg)
-        raise HTTPException(status_code=500, detail=err_msg)
-
-    audio_writer = StreamingAudioWriter(req.response_format, sample_rate=engine.SAMPLE_RATE)
-    # Set content type based on format
-    content_type = {
-        "mp3": "audio/mpeg",
-        "opus": "audio/opus",
-        "aac": "audio/aac",
-        "flac": "audio/flac",
-        "wav": "audio/wav",
-        "pcm": "audio/pcm",
-    }.get(req.response_format, f"audio/{req.response_format}")
-
-    if req.stream:
-        data = dict(
-            text=req.text,
-            gender=req.gender,
-            pitch=req.pitch,
-            speed=req.speed,
-            temperature=req.temperature,
-            top_p=req.top_p,
-            top_k=req.top_k,
-            repetition_penalty=req.repetition_penalty,
-            max_tokens=req.max_tokens,
-            length_threshold=req.length_threshold,
-            window_size=req.window_size
-        )
-        return StreamingResponse(
-            generate_audio_stream(
-                engine.generate_voice_stream_async,
-                data,
-                audio_writer,
-                raw_request
-            ),
-            media_type=content_type,
-            headers={
-                "Content-Disposition": f"attachment; filename=speech.{req.response_format}",
-                "X-Accel-Buffering": "no",
-                "Cache-Control": "no-cache",
-                "Transfer-Encoding": "chunked",
-            },
-        )
-    else:
-        try:
-            audio = await engine.generate_voice_async(
-                req.text,
-                gender=req.gender,
-                pitch=req.pitch,
-                speed=req.speed,
-                temperature=req.temperature,
-                top_p=req.top_p,
-                top_k=req.top_k,
-                repetition_penalty=req.repetition_penalty,
-                max_tokens=req.max_tokens,
-                length_threshold=req.length_threshold,
-                window_size=req.window_size,
-            )
-        except Exception as e:
-            logger.warning(f"TTS 合成失败: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
-        headers = {
-            "Content-Disposition": f"attachment; filename=speech.{req.response_format}",
-            "Cache-Control": "no-cache",  # Prevent caching
-        }
-        audio_io = await generate_audio(audio, writer=audio_writer)
-        return Response(
-            audio_io,
-            media_type=content_type,
-            headers=headers,
-        )
-
-
 async def get_audio_bytes_from_url(url: str) -> bytes:
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
@@ -141,6 +62,8 @@ def parse_clone_form(
         text: str = Form(...),
         reference_audio: Optional[str] = Form(None),
         reference_text: Optional[str] = Form(None),
+        pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Form(None),
+        speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Form(None),
         temperature: float = Form(0.9),
         top_k: int = Form(50),
         top_p: float = Form(0.95),
@@ -155,6 +78,8 @@ def parse_clone_form(
         text=text,
         reference_audio=reference_audio,
         reference_text=reference_text,
+        pitch=pitch,
+        speed=speed,
         temperature=temperature,
         top_k=top_k,
         top_p=top_p,
@@ -231,6 +156,8 @@ async def clone_voice(
             text=req.text,
             reference_audio=reference_audio,
             reference_text=req.reference_text,
+            pitch=req.pitch,
+            speed=req.speed,
             temperature=req.temperature,
             top_p=req.top_p,
             top_k=req.top_k,
@@ -260,6 +187,8 @@ async def clone_voice(
                 text=req.text,
                 reference_audio=reference_audio,
                 reference_text=req.reference_text,
+                pitch=req.pitch,
+                speed=req.speed,
                 temperature=req.temperature,
                 top_p=req.top_p,
                 top_k=req.top_k,
@@ -317,6 +246,8 @@ async def speak(req: SpeakRequest, raw_request: Request):
             name=req.name,
             text=req.text,
             temperature=req.temperature,
+            pitch=req.pitch,
+            speed=req.speed,
             top_p=req.top_p,
             top_k=req.top_k,
             repetition_penalty=req.repetition_penalty,
@@ -344,6 +275,8 @@ async def speak(req: SpeakRequest, raw_request: Request):
             audio = await engine.speak_async(
                 name=req.name,
                 text=req.text,
+                pitch=req.pitch,
+                speed=req.speed,
                 temperature=req.temperature,
                 top_p=req.top_p,
                 top_k=req.top_k,

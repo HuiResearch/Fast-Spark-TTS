@@ -103,23 +103,6 @@ def get_example_input(engine: AutoEngine, mode: Literal["short", 'long', 'multi-
             return short_text_en
 
 
-async def generate_voice(engine: AutoEngine):
-    """
-    异步语音合成示例
-    """
-    if engine.engine_name != 'spark':
-        raise ValueError("仅Spark-TTS支持`generate_voice`功能.")
-    wav = await engine.generate_voice_async(
-        get_example_input(engine, mode='short'),
-        gender="female",
-        temperature=0.9,
-        top_p=0.95,
-        top_k=50,
-        max_tokens=512
-    )
-    return wav
-
-
 async def clone_voice(engine: AutoEngine):
     """
         异步语音克隆示例
@@ -137,21 +120,6 @@ async def clone_voice(engine: AutoEngine):
     return wav
 
 
-async def generate_long_voice(engine: AutoEngine):
-    """
-        异步长文本语音合成示例，split表示开启句子切分，window_size为句子窗口大小
-        """
-    if engine.engine_name != 'spark':
-        raise ValueError("仅Spark-TTS支持`generate_voice`功能.")
-    wav = await engine.generate_voice_async(
-        text=get_example_input(engine, mode='long'),
-        split=True,
-        length_threshold=50,
-        window_size=50
-    )
-    return wav
-
-
 async def clone_long_voice(engine: AutoEngine):
     """
     异步长文本语音克隆示例
@@ -165,25 +133,6 @@ async def clone_long_voice(engine: AutoEngine):
         window_size=50,
     )
     return wav
-
-
-async def generate_voice_stream(engine: AutoEngine):
-    """
-    流式音频合成示例
-    """
-    if engine.engine_name != 'spark':
-        raise ValueError("仅Spark-TTS支持`generate_voice_stream`功能.")
-    audios = []
-    async for chunk in engine.generate_voice_stream_async(
-            text=get_example_input(engine, mode='long'),
-            split=True,
-            length_threshold=50,
-            window_size=50
-    ):
-        audios.append(chunk)
-
-    audio = np.concatenate(audios)
-    return audio
 
 
 async def clone_voice_stream(engine: AutoEngine):
@@ -211,8 +160,9 @@ async def retain_acoustic_example(engine: AutoEngine):
     """
     assert engine.engine_name == 'spark'
     # 1. 随机测试一句话，设置return_acoustic_tokens为True
-    wav, tokens = await engine.generate_voice_async(
+    wav, tokens = await engine.speak_async(
         text="今日是二零二五年三月十九日，国内外热点事件聚焦于国际局势、经济政策及社会民生领域。",
+        name="female",
         return_acoustic_tokens=True
     )
     # 2. 真巧，这是我想要的音色，直接保存为txt
@@ -221,8 +171,9 @@ async def retain_acoustic_example(engine: AutoEngine):
     engine.write_audio(wav, "first.wav")
 
     # 3. 加载保存的音色，生成第二个音频
-    wav = await engine.generate_voice_async(
+    wav = await engine.speak_async(
         text="国际局势中，某国领导人围绕地区冲突停火问题展开对话，双方同意停止攻击对方能源设施并推动谈判，但对全面停火提议的落实仍存分歧。",
+        name="female",
         acoustic_tokens=SparkAcousticTokens.load("acoustic_tokens.txt"),
     )
     engine.write_audio(wav, "second.wav")
@@ -237,8 +188,9 @@ async def retain_acoustic_stream_example(engine: AutoEngine):
     # 1. 随机测试一句话，设置return_acoustic_tokens为True
     audios = []
     acoustic_tokens = None
-    async for chunk in engine.generate_voice_stream_async(
+    async for chunk in engine.speak_stream_async(
             text="身临其境，换新体验。塑造开源语音合成新范式，让智能语音更自然。",
+            name="female",
             return_acoustic_tokens=True
     ):
         if isinstance(chunk, SparkAcousticTokens):
@@ -253,8 +205,9 @@ async def retain_acoustic_stream_example(engine: AutoEngine):
 
     # 3. 加载保存的音色，生成第二个音频
     audios = []
-    async for chunk in engine.generate_voice_stream_async(
+    async for chunk in engine.speak_stream_async(
             text="今日是二零二五年三月十九日，国内外热点事件聚焦于国际局势、经济政策及社会民生领域。",
+            name="female",
             acoustic_tokens=SparkAcousticTokens.load("acoustic_tokens.txt")
     ):
         audios.append(chunk)

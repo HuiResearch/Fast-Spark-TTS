@@ -34,8 +34,10 @@ class Engine(ABC):
     @abstractmethod
     async def speak_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -50,8 +52,10 @@ class Engine(ABC):
     @abstractmethod
     async def speak_stream_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -69,6 +73,8 @@ class Engine(ABC):
             text: str,
             reference_audio,
             reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -86,42 +92,8 @@ class Engine(ABC):
             text: str,
             reference_audio,
             reference_text: Optional[str] = None,
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            **kwargs) -> AsyncIterator[np.ndarray]:
-        yield  # type: ignore
-
-    @abstractmethod
-    async def generate_voice_async(
-            self,
-            text: str,
-            gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            **kwargs) -> np.ndarray:
-        ...
-
-    @abstractmethod
-    async def generate_voice_stream_async(
-            self,
-            text: str,
-            gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -246,13 +218,13 @@ class BaseEngine(Engine):
             length_threshold=length_threshold
         )
 
-    def _parse_multi_speak_text(self, text: str) -> list[dict[str, str]]:
+    def _parse_multi_speak_text(self, text: str, is_spark: bool = False) -> list[dict[str, str]]:
         if len(self.list_roles()) == 0:
             msg = f"{self.__class__.__name__} 中角色库为空，无法实现多角色语音合成。"
             logger.error(msg)
             raise RuntimeError(msg)
 
-        segments = parse_multi_speaker_text(text, self.list_roles())
+        segments = parse_multi_speaker_text(text, self.list_roles(), is_spark=is_spark)
         if len(segments) == 0:
             msg = f"多角色文本解析结果为空，请检查输入文本格式：{text}"
             logger.error(msg)
@@ -268,8 +240,10 @@ class BaseEngine(Engine):
 
     async def speak_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -283,8 +257,10 @@ class BaseEngine(Engine):
 
     async def speak_stream_async(
             self,
-            name: str,
             text: str,
+            name: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -301,6 +277,8 @@ class BaseEngine(Engine):
             text: str,
             reference_audio,
             reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -317,6 +295,8 @@ class BaseEngine(Engine):
             text: str,
             reference_audio,
             reference_text: Optional[str] = None,
+            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
+            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = None,
             temperature: float = 0.9,
             top_k: int = 50,
             top_p: float = 0.95,
@@ -327,40 +307,6 @@ class BaseEngine(Engine):
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> AsyncIterator[np.ndarray]:
         yield NotImplementedError(f"clone_voice_stream_async not implemented for {self.__class__.__name__}")
-
-    async def generate_voice_async(
-            self,
-            text: str,
-            gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            **kwargs) -> np.ndarray:
-        raise NotImplementedError(f"generate_voice_async not implemented for {self.__class__.__name__}")
-
-    async def generate_voice_stream_async(
-            self,
-            text: str,
-            gender: Optional[Literal["female", "male"]] = "female",
-            pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = "moderate",
-            temperature: float = 0.9,
-            top_k: int = 50,
-            top_p: float = 0.95,
-            repetition_penalty: float = 1.0,
-            max_tokens: int = 4096,
-            length_threshold: int = 50,
-            window_size: int = 50,
-            split_fn: Optional[Callable[[str], list[str]]] = None,
-            **kwargs) -> AsyncIterator[np.ndarray]:
-        yield NotImplementedError(f"generate_voice_stream_async not implemented for {self.__class__.__name__}")
 
     async def multi_speak_async(
             self,
@@ -377,8 +323,8 @@ class BaseEngine(Engine):
     ) -> np.ndarray:
         """
         调用多角色共同合成语音。
-        text (str): 待解析的文本，文本中各段台词前以 <角色名> 标识。
-        如：<角色1>你好，欢迎来到我们的节目。<角色2>谢谢，我很高兴在这里。<角色3>大家好！
+        text (str): 待解析的文本，文本中各段台词前以 <role:角色名> 标识。
+        如：<role:角色1>你好，欢迎来到我们的节目。<role:角色2>谢谢，我很高兴在这里。<role:角色3>大家好！
         """
         segments = self._parse_multi_speak_text(text)
         semaphore = asyncio.Semaphore(self._batch_size)  # 限制并发数，避免超长文本卡死
@@ -388,6 +334,8 @@ class BaseEngine(Engine):
                 limit_speak(
                     name=segment['name'],
                     text=segment['text'],
+                    pitch=segment['pitch'],
+                    speed=segment['speed'],
                     temperature=temperature,
                     top_k=top_k,
                     top_p=top_p,
@@ -423,6 +371,8 @@ class BaseEngine(Engine):
             async for chunk in self.speak_stream_async(
                     name=segment['name'],
                     text=segment['text'],
+                    pitch=segment['pitch'],
+                    speed=segment['speed'],
                     temperature=temperature,
                     top_k=top_k,
                     top_p=top_p,
