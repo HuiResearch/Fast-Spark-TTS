@@ -78,14 +78,26 @@ async def create_speech(
             "pcm": "audio/pcm",
         }.get(request.response_format, f"audio/{request.response_format}")
 
+        api_inputs = dict(
+            name=request.voice,
+            text=request.input,
+            pitch=request.pitch,
+            speed=request.speed,
+            temperature=request.temperature,
+            top_k=request.top_k,
+            top_p=request.top_p,
+            repetition_penalty=request.repetition_penalty,
+            max_tokens=request.max_tokens,
+            length_threshold=request.length_threshold,
+            window_size=request.window_size
+        )
         # Check if streaming is requested (default for OpenAI client)
         if request.stream:
             async def stream_output():
                 try:
                     # Stream chunks
                     async for chunk_data in engine.speak_stream_async(
-                            name=request.voice,
-                            text=request.input,
+                            **api_inputs
                     ):
                         # Check if client is still connected
                         is_disconnected = client_request.is_disconnected
@@ -123,8 +135,7 @@ async def create_speech(
 
             # Generate complete audio using public interface
             audio_data = await engine.speak_async(
-                name=request.voice,
-                text=request.input,
+                **api_inputs
             )
             output = audio_writer.write_chunk(audio_data, finalize=False)
             final = audio_writer.write_chunk(finalize=True)

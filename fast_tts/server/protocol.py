@@ -217,6 +217,43 @@ class OpenAISpeechRequest(BaseModel):
         default=None,
         description="The voice to use for generation. Can be a base voice or a combined voice name.",
     )
+    pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Field(
+        default=None,
+        description="Specifies the pitch level for the generated audio. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
+    )
+    speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Field(
+        default=None,
+        description="Specifies the speed level of the audio output. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
+    )
+    temperature: float = Field(
+        default=0.9,
+        description="Controls the randomness of the speech synthesis. A higher temperature produces more diverse outputs."
+    )
+    top_k: int = Field(
+        default=50,
+        description="Limits the sampling to the top 'k' most probable tokens during generation."
+    )
+    top_p: float = Field(
+        default=0.95,
+        description="Nucleus sampling threshold: only tokens with a cumulative probability up to 'top_p' are considered."
+    )
+    repetition_penalty: float = Field(
+        default=1.0,
+        description="Controls the repetition penalty applied to the generated text. "
+                    "Higher values penalize repeated words and phrases."
+    )
+    max_tokens: int = Field(
+        default=4096,
+        description="Specifies the maximum number of tokens to generate in the output."
+    )
+    length_threshold: int = Field(
+        default=50,
+        description="If the input text exceeds this token length threshold, it will be split into multiple segments for synthesis."
+    )
+    window_size: int = Field(
+        default=50,
+        description="Determines the window size for each text segment when performing segmentation on longer texts."
+    )
     response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"] = Field(
         default="mp3",
         description="The format to return audio in. Supported formats: mp3, opus, flac, wav, pcm. PCM format returns raw 16-bit samples without headers. AAC is not currently supported.",
