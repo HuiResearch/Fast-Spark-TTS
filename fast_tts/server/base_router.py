@@ -50,6 +50,11 @@ async def get_web():
     return FileResponse("templates/index.html")
 
 
+@base_router.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("templates/favicon.ico")
+
+
 async def get_audio_bytes_from_url(url: str) -> bytes:
     async with httpx.AsyncClient() as client:
         response = await client.get(url)

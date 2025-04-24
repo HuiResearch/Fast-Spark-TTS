@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Time      :2025/3/15 11:37
 # Author    :Hui Huang
+import multipart
 import argparse
 import os
 from contextlib import asynccontextmanager
@@ -135,7 +136,7 @@ def build_app(args) -> FastAPI:
         allow_origins=["*"],
         allow_credentials=False,
         allow_methods=["*"],
-        allow_headers=["*"],
+        allow_headers=["*"]
     )
 
     if args.api_key is not None:

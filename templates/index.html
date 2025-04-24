@@ -940,26 +940,12 @@
         formData.append('max_tokens', document.getElementById('clone-max-tokens').value);
         formData.append('repetition_penalty', document.getElementById('clone-repetition-penalty').value);
 
-        // 直接上传参考音频文件
+        // ===== 直接上传参考音频文件（二进制） =====
         const audioInput = document.getElementById('clone-reference-audio');
         if (audioInput.files && audioInput.files[0]) {
             const file = audioInput.files[0];
-
-            const base64 = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const result = reader.result;
-                    const base64Index = result.indexOf("base64,");
-                    if (base64Index !== -1) {
-                        resolve(result.substring(base64Index + 7));
-                    } else {
-                        resolve(result);
-                    }
-                };
-                reader.onerror = () => reject(new Error("文件读取失败"));
-                reader.readAsDataURL(file);
-            });
-            formData.append('reference_audio', base64);
+            // 直接 append File，浏览器处理为 multipart/form-data 二进制上传
+            formData.append('reference_audio_file', file, file.name);
         } else {
             showAlert('clone', '请上传参考音频文件', 'warning');
             loading.style.display = 'none';
