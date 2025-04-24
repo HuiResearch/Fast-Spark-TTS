@@ -218,13 +218,13 @@ class BaseEngine(Engine):
             length_threshold=length_threshold
         )
 
-    def _parse_multi_speak_text(self, text: str, is_spark: bool = False) -> list[dict[str, str]]:
+    def _parse_multi_speak_text(self, text: str) -> list[dict[str, str]]:
         if len(self.list_roles()) == 0:
             msg = f"{self.__class__.__name__} 中角色库为空，无法实现多角色语音合成。"
             logger.error(msg)
             raise RuntimeError(msg)
 
-        segments = parse_multi_speaker_text(text, self.list_roles(), is_spark=is_spark)
+        segments = parse_multi_speaker_text(text, self.list_roles())
         if len(segments) == 0:
             msg = f"多角色文本解析结果为空，请检查输入文本格式：{text}"
             logger.error(msg)
