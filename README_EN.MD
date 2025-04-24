@@ -32,8 +32,7 @@
 
 ## 🖼️ Frontend Showcase
 
-https://github.com/user-attachments/assets/ab7ca580-45b3-41ba-acfd-b2f68ff62948
-
+https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 ## Inference Speed
 
 - GPU: `A800`
