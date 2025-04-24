@@ -120,7 +120,7 @@ def process_prompt(
         attribte_tokens = "".join(
             [pitch_label_tokens, speed_label_tokens]
         )
-    audio_text = text if prompt_text is None or len(prompt_text) == 0 else (text + prompt_text)
+    audio_text = text if prompt_text is None or len(prompt_text) == 0 else (prompt_text + text)
     inputs = [
         TASK_TOKEN_MAP["tts"],
         "<|start_content|>",
