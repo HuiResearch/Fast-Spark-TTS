@@ -51,12 +51,12 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 <tr>
 <td align="center">
 
-[Donald Trump en](https://github.com/user-attachments/assets/2e60851e-333a-4dc8-adf3-89a8b6102641)
+[Donald Trump en](https://github.com/user-attachments/assets/79d4d1d1-5579-4ddb-8092-500b3db05d45)
 
 </td>
 <td align="center">
 
-[Donald Trump zh](https://github.com/user-attachments/assets/110d105b-83b9-4482-a43e-41838d13c7ba)
+[Donald Trump zh](https://github.com/user-attachments/assets/262f4306-4a0f-4735-b4e7-708cd3193324)
 
 </td>
 </tr>
@@ -77,12 +77,12 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 <tr>
 <td align="center">
 
-[哪吒](https://github.com/user-attachments/assets/44f6e9d9-77ba-4f0f-94e4-e7cac0ef925c)
+[哪吒](https://github.com/user-attachments/assets/4743778b-63c7-4c42-95b2-636828364d67)
 
 </td>
 <td align="center">
 
-[李靖](https://github.com/user-attachments/assets/55a9be10-10cc-4438-a507-a6a8cabe47b8)
+[李靖](https://github.com/user-attachments/assets/b5a51fa9-c5a1-4f39-bbf8-09e73b2c1936)
 
 </td>
 </tr>
@@ -103,12 +103,12 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 <tr>
 <td align="center">
 
-[余承东](https://github.com/user-attachments/assets/f1b8d59c-6d28-405a-a91b-9b4514daf7ff)
+[余承东](https://github.com/user-attachments/assets/1cd5f156-010d-4bc9-8e99-f37def54b99f)
 
 </td>
 <td align="center">
 
-[徐志胜](https://github.com/user-attachments/assets/465eb52e-4692-4d17-aabb-6dd14664af3b)
+[徐志胜](https://github.com/user-attachments/assets/f197ac39-5928-4ead-83d7-071b1bf5f974)
 
 </td>
 </tr>
