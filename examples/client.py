@@ -34,7 +34,7 @@ def clone_with_base64():
     # 使用 base64 编码的参考音频
     text = "身临其境，换新体验。塑造开源语音合成新范式，让智能语音更自然。"
 
-    reference_audio_path = "data/roles/赞助商/reference_audio.wav"  # 请替换为你本地的参考音频文件路径
+    reference_audio_path = "../data/roles/赞助商/reference_audio.wav"  # 请替换为你本地的参考音频文件路径
     try:
         with open(reference_audio_path, "rb") as f:
             audio_bytes = f.read()
@@ -66,7 +66,7 @@ def clone_with_file():
     # 使用 base64 编码的参考音频
     text = "身临其境，换新体验。塑造开源语音合成新范式，让智能语音更自然。"
 
-    reference_audio_path = "data/roles/赞助商/reference_audio.wav"  # 请替换为你本地的参考音频文件路径
+    reference_audio_path = "../data/roles/赞助商/reference_audio.wav"  # 请替换为你本地的参考音频文件路径
 
     payload = {
         "text": text,
@@ -108,7 +108,7 @@ def clone_voice_stream():
                  "民生政策方面，多地推出新举措：某地限制顺风车单日接单次数以规范运营，另一地启动职工数字技能培训计划，目标三年内覆盖十万女性从业者。"
                  "整体来看，今日热点呈现国际博弈复杂化、国内经济科技加速转型、民生政策精准化调整的特点。")
 
-    reference_audio_path = "data/roles/赞助商/reference_audio.wav"  # 请替换为你本地的参考音频文件路径
+    reference_audio_path = "../data/roles/赞助商/reference_audio.wav"  # 请替换为你本地的参考音频文件路径
     try:
         with open(reference_audio_path, "rb") as f:
             audio_bytes = f.read()

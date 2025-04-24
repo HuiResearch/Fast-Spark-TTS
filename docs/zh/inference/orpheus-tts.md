@@ -41,14 +41,20 @@ def prepare_engine():
 
 ### 单句合成
 
+`Orpheus-TTS`仅支持语音合成，克隆效果不佳，未添加克隆的接口。
+
+该模型支持情感标签，比如`<轻笑>`、`<咳嗽>`
+等，具体每种模型支持的标签情况参考：https://canopylabs.ai/releases/orpheus_can_speak_any_language#info
+
 ```python
 import asyncio
 
-text = "我是长乐啦。 <轻笑>"
-# 异步调用示例
-wav = asyncio.run(engine.speak_async(text=text, name="长乐"))
-# 保存音频
-engine.write_audio(wav, "output.wav")
+if __name__ == '__main__':
+    text = "我是长乐啦。 <轻笑>"
+    # 异步调用示例
+    wav = asyncio.run(engine.speak_async(text=text, name="长乐"))
+    # 保存音频
+    engine.write_audio(wav, "output.wav")
 ```
 
 ### 长文本合成
@@ -56,19 +62,24 @@ engine.write_audio(wav, "output.wav")
 ```python
 import asyncio
 
-long_text = "..."  # >200 字长文本
-wav = asyncio.run(
-    engine.speak_async(
-        text=long_text,
-        name="长乐",
-        length_threshold=50,
-        window_size=50
+if __name__ == '__main__':
+    long_text = "..."  # >200 字长文本
+    wav = asyncio.run(
+        engine.speak_async(
+            text=long_text,
+            name="长乐",
+            length_threshold=50,
+            window_size=50
+        )
     )
-)
-engine.write_audio(wav, "long_output.wav")
+    engine.write_audio(wav, "long_output.wav")
 ```
 
 ### 多角色合成
+
+通过角色标识符`<role:角色名>`指示每个句子所属的角色。
+
+由于不支持语音克隆，暂不支持自定义角色添加。
 
 ```python
 import asyncio
@@ -89,23 +100,30 @@ asyncio.run(run())
 
 ### 流式输出
 
+`OrpheusTTS`所有接口均支持流式。
+
 ```python
-chunks = []
-async for chunk in engine.speak_stream_async(text, name="长乐"):
-    chunks.append(chunk)
-audio = np.concatenate(chunks)
-engine.write_audio(audio, "stream.wav")
+if __name__ == '__main__':
+
+    chunks = []
+    async for chunk in engine.speak_stream_async(text, name="长乐"):
+        chunks.append(chunk)
+    audio = np.concatenate(chunks)
+    engine.write_audio(audio, "stream.wav")
 ```
 
 ## API 参考
 
 详见 [fast_tts/engine/orpheus_engine](../../../fast_tts/engine/orpheus_engine.py) 下各方法注释，主要类和方法：
 
-| 类 / 方法               | 描述                      |
-|----------------------|-------------------------|
-| `AsyncOrpheusEngine` | 封装`Orpheus-TTS`初始化      |
-| `speak_async`        | 异步文本合成，返回音频数据(np.int16) |
-| `speak_stream_async` | 异步流式合成，按音频块迭代返回         |
+| 类 / 方法                     | 描述                         |
+|----------------------------|----------------------------|
+| `AsyncOrpheusEngine`       | 封装`Orpheus-TTS`初始化         |
+| `list_roles`               | 查看已有角色列表                   |
+| `speak_async`              | 异步文本合成，返回音频数据(np.int16)    |
+| `speak_stream_async`       | 异步流式合成，按音频块迭代返回            |
+| `multi_speak_async`        | 多角色语音合成，在父类`BaseEngine`中定义 |
+| `multi_speak_stream_async` | 多角色语音合成，在父类`BaseEngine`中定义 |
 
 ### `AsyncOrpheusEngine` 初始化参数说明
 
@@ -128,7 +146,11 @@ engine.write_audio(audio, "stream.wav")
 
 ### 主要接口参数说明
 
-#### `speak_async`
+#### 1. `list_roles`查看已有角色列表
+
+返回`list[str]`
+
+#### 2. `speak_async`
 
 | 参数                   | 类型                           | 默认值        | 描述                           |
 |----------------------|------------------------------|------------|------------------------------|
@@ -145,4 +167,18 @@ engine.write_audio(audio, "stream.wav")
 | `window_size`        | `int`                        | `50`       | 文本滑动窗口大小                     |
 | `split_fn`           | `Callable[[str], list[str]]` | `None`     | 自定义分割函数                      |
 
-#### `speak_stream_async` 与 `speak_async` 参数一致。
+#### 3. `speak_stream_async` 与 `speak_async` 参数一致。
+
+#### 4. `multi_speak_async`：多角色音频合成
+
+| 参数                | 类型    | 默认值 | 描述                                      |
+|-------------------|-------|-----|-----------------------------------------|
+| `text`            | `str` | —   | 多角色对话文本，通过角色标识符`<role:角色名>`指示每个句子所属的角色。 |
+| 其他同 `speak_async` | —     | —   | 包括 `temperature`、`top_k`、`top_p` 等      |
+
+#### 5. `multi_speak_stream_async`：多角色流式音频合成
+
+| 参数                       | 类型    | 默认值 | 描述                                      |
+|--------------------------|-------|-----|-----------------------------------------|
+| `text`                   | `str` | —   | 多角色对话文本，通过角色标识符`<role:角色名>`指示每个句子所属的角色。 |
+| 其他同 `speak_stream_async` | —     | —   | 包括 `temperature`、`top_k`、`top_p` 等      |

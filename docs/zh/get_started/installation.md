@@ -9,7 +9,7 @@
 - **Python**: 3.10+
 - **操作系统**: Linux x86_64、macOS 或 Windows（推荐 WSL2）
 - **必需依赖**:
-    - `fastapi` 或其他 Web 框架（视项目需求）
+    - `fastapi`
     - 推理后端选项之一: `vllm`、`sglang`、`llama-cpp-python`、`mlx-lm`
 
 ---
@@ -27,6 +27,19 @@
 
 ### 安装依赖
 
+#### 1. 安装`torch`和`torchaudio`
+
+进入[pytorch官网](https://pytorch.org/get-started/locally/)，查找对应的设备环境安装命令，执行。请注意自己的设备的`cuda驱动`
+版本等信息。
+
+以`cuda 12.4`为例：
+
+```bash
+pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
+```
+
+#### 2. 安装其余依赖
+
 ```bash
 # 克隆仓库并进入目录
 git clone https://github.com/HuiResearch/Fast-Spark-TTS.git
@@ -36,13 +49,16 @@ cd Fast-Spark-TTS
 pip install -r requirements.txt
 ```
 
-#### 推理后端安装（按需选择一项）
+#### 3. 推理后端安装（按需选择一项）
 
-- **vLLM** (版本需 >0.7.2)
+- **vLLM** (版本需 > 0.7.2)
+
+  `cuda 12.4`默认安装命令为：
   ```bash
   pip install vllm
   ```
-  参考: https://github.com/vllm-project/vllm
+  如果`cuda`为其它版本，请参考: https://docs.vllm.ai/en/latest/getting_started/installation.html
+
 
 - **llama-cpp-python**
   ```bash
@@ -60,7 +76,7 @@ pip install -r requirements.txt
   ```bash
   pip install sglang
   ```
-  参考: https://github.com/sgl-project/sglang
+  参考: https://docs.sglang.ai/start/install.html
 
 - **mlx-lm** (适用于 Apple Silicon macOS)
   ```bash
