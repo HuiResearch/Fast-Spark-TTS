@@ -217,13 +217,13 @@ class OpenAISpeechRequest(BaseModel):
         default=None,
         description="The voice to use for generation. Can be a base voice or a combined voice name.",
     )
-    pitch: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Field(
-        default=None,
-        description="Specifies the pitch level for the generated audio. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
+    pitch: float = Field(
+        default=1.0,
+        description="Specifies the pitch level for the generated audio. "
     )
-    speed: Optional[Literal["very_low", "low", "moderate", "high", "very_high"]] = Field(
-        default=None,
-        description="Specifies the speed level of the audio output. Valid options: 'very_low', 'low', 'moderate', 'high', 'very_high'."
+    speed: float = Field(
+        default=1.0,
+        description="Specifies the speed level of the audio output."
     )
     temperature: float = Field(
         default=0.9,
