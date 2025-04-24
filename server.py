@@ -196,6 +196,8 @@ if __name__ == '__main__':
     parser.add_argument("--wait_timeout", type=float, default=0.01, help="动态批处理请求超时阈值，单位为秒。")
     parser.add_argument("--host", type=str, default="0.0.0.0", help="服务监听地址")
     parser.add_argument("--port", type=int, default=8000, help="服务监听端口")
+    parser.add_argument("--ssl_keyfile", type=str, default=None, help="The file path to the SSL key file.")
+    parser.add_argument("--ssl_certfile", type=str, default=None, help="The file path to the SSL certificate file.")
     args = parser.parse_args()
 
     setup_logging()
@@ -203,4 +205,4 @@ if __name__ == '__main__':
     logger.info("启动 FastTTS 服务")
     logger.info(f"Config: {args}")
     app = build_app(args)
-    uvicorn.run(app, host=args.host, port=args.port)
+    uvicorn.run(app, host=args.host, port=args.port, ssl_keyfile=args.ssl_keyfile, ssl_certfile=args.ssl_certfile)
