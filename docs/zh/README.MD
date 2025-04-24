@@ -26,10 +26,10 @@
 
 ## 🧠 推理引擎与模型
 
-- [auto-engine](inference/auto-engine.md)：介绍项目中的自动推理引擎模块。
 - [mega-tts](inference/mega-tts.md)：Mega TTS 模型的配置和使用方法。
 - [orpheus-tts](inference/orpheus-tts.md)：Orpheus TTS 模型的详细文档。
 - [spark-tts](inference/spark-tts.md)：Spark TTS 模型的推理流程与特点。
+- [auto-engine](inference/auto-engine.md)：介绍项目中的自动推理引擎模块。
 
 ## 🌐 部署服务
 

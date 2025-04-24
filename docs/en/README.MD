@@ -27,10 +27,10 @@ Started (`get_started`)**, **Model Inference (`inference`)**, and **Server Deplo
 
 ## 🧠 Inference Engines and Models
 
-- [auto-engine](inference/auto-engine.md): Introduction to the project's automatic inference engine module.
 - [mega-tts](inference/mega-tts.md): Configuration and usage of the Mega TTS model.
 - [orpheus-tts](inference/orpheus-tts.md): Detailed documentation for the Orpheus TTS model.
 - [spark-tts](inference/spark-tts.md): Inference process and features of the Spark TTS model.
+- [auto-engine](inference/auto-engine.md): Introduction to the project's automatic inference engine module.
 
 ## 🌐 Deploying the Service
 
