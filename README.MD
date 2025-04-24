@@ -32,7 +32,7 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 
 ## 语音 Demos
 
-这里是Spark-TTS模型的克隆语音试听案例
+这里是`Spark-TTS`模型的克隆语音试听案例
 
 ---
 
@@ -40,11 +40,11 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 <tr>
 <td align="center">
 
-**Donald Trump en**
+**Donald Trump (en)**
 </td>
 <td align="center">
 
-**Donald Trump zh**
+**Donald Trump (zh)**
 </td>
 </tr>
 
@@ -109,6 +109,70 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 <td align="center">
 
 [徐志胜](https://github.com/user-attachments/assets/f197ac39-5928-4ead-83d7-071b1bf5f974)
+
+</td>
+</tr>
+</table>
+
+---
+
+这里是`MegaTTS3`模型的克隆语音试听案例
+
+---
+
+<table>
+<tr>
+<td align="center">
+
+**蔡徐坤**
+</td>
+<td align="center">
+
+**太乙真人**
+</td>
+</tr>
+
+<tr>
+<td align="center">
+
+[蔡徐坤](https://github.com/user-attachments/assets/bcb48ead-f157-45d7-8060-cbccf418f0ed)
+
+</td>
+<td align="center">
+
+[太乙真人](https://github.com/user-attachments/assets/73edbd6b-ece3-4e22-95a2-53b7c4e45346)
+
+</td>
+</tr>
+</table>
+
+---
+
+这里是`OrpheusTTS zh`模型的合成语音试听案例
+
+---
+
+<table>
+<tr>
+<td align="center">
+
+**长乐**
+</td>
+<td align="center">
+
+**白芷**
+</td>
+</tr>
+
+<tr>
+<td align="center">
+
+[长乐](https://github.com/user-attachments/assets/271bd5a3-dd56-430a-87d0-ebea0e397a89)
+
+</td>
+<td align="center">
+
+[白芷](https://github.com/user-attachments/assets/e012c580-840f-401c-99f5-665c72f6b89f)
 
 </td>
 </tr>

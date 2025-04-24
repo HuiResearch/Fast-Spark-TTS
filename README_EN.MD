@@ -120,6 +120,70 @@ Here are sample voice demos cloned using the Spark-TTS model.
 
 ---
 
+Here is a demo of cloned voices using the `MegaTTS3` model.
+
+---
+
+<table>
+<tr>
+<td align="center">
+
+**蔡徐坤**
+</td>
+<td align="center">
+
+**太乙真人**
+</td>
+</tr>
+
+<tr>
+<td align="center">
+
+[蔡徐坤](https://github.com/user-attachments/assets/bcb48ead-f157-45d7-8060-cbccf418f0ed)
+
+</td>
+<td align="center">
+
+[太乙真人](https://github.com/user-attachments/assets/73edbd6b-ece3-4e22-95a2-53b7c4e45346)
+
+</td>
+</tr>
+</table>
+
+---
+
+Here is a demo of synthesized voices using the `OrpheusTTS zh` model.
+
+---
+
+<table>
+<tr>
+<td align="center">
+
+**长乐**
+</td>
+<td align="center">
+
+**白芷**
+</td>
+</tr>
+
+<tr>
+<td align="center">
+
+[长乐](https://github.com/user-attachments/assets/271bd5a3-dd56-430a-87d0-ebea0e397a89)
+
+</td>
+<td align="center">
+
+[白芷](https://github.com/user-attachments/assets/e012c580-840f-401c-99f5-665c72f6b89f)
+
+</td>
+</tr>
+</table>
+
+---
+
 ## Inference Speed
 
 - GPU: `A800`

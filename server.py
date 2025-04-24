@@ -98,6 +98,7 @@ def build_app(args) -> FastAPI:
         engine = AutoEngine(
             model_path=args.model_path,
             snac_path=args.snac_path,
+            lang=args.lang,
             max_length=args.max_length,
             llm_device=args.llm_device,
             tokenizer_device=args.tokenizer_device,
@@ -161,6 +162,9 @@ if __name__ == '__main__':
     parser.add_argument("--backend", type=str, required=True,
                         choices=["llama-cpp", "vllm", "sglang", "torch", "mlx-lm"],
                         help="引擎类型，如 llama-cpp、vllm、sglang、mlx-lm 或 torch")
+    parser.add_argument(
+        "--lang", type=str, default=None,
+        help="Orpheus TTS 模型的语言类型，根据自己模型设置：mandarin, french, german, korean, hindi, spanish, italian, spanish_italian, english")
     parser.add_argument("--snac_path", type=str, default=None,
                         help="OrpheusTTS 的snac模块地址")
     parser.add_argument("--llm_device", type=str, default="auto",

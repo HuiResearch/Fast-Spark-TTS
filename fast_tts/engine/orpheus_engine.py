@@ -147,6 +147,8 @@ class AsyncOrpheusEngine(BaseEngine):
                 None
             ] = "english"
     ) -> str:
+        if model_path is not None and model_path.endswith("/"):
+            model_path = model_path[:-1]
         model_name = os.path.split(model_path)[-1]
         if "zh" in model_name:
             detect_lang = "mandarin"
@@ -249,7 +251,7 @@ class AsyncOrpheusEngine(BaseEngine):
     ) -> AsyncIterator[np.ndarray]:
         buffer = []
         index = 0
-        pattern = re.compile("<custom_token_(\d+)>")
+        pattern = re.compile(r"<custom_token_(\d+)>")
         async for text_token in self.generator.async_stream_generate(
                 prompt=prompt,
                 max_tokens=max_tokens,
