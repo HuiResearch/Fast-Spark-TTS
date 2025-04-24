@@ -460,6 +460,62 @@
             background-color: #e8eaed;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .recording-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px;
+        }
+
+        .recording-btn:hover {
+            background-color: #3367d6;
+        }
+
+        .recording-btn i {
+            margin-right: 8px;
+        }
+
+        .recording-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .audio-preview {
+            background-color: rgba(66, 133, 244, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .audio-preview h5 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -517,6 +573,22 @@
                                required
                                onchange="handleFileSelect(this)">
                         <p id="clone-reference-file-name" class="file-name"></p>
+                    </div>
+                    <div class="recording-container" style="margin-top: 15px; text-align: center;">
+                        <button type="button" id="start-recording" class="recording-btn">
+                            <i class="fas fa-microphone"></i> 开始录音
+                        </button>
+                        <button type="button" id="stop-recording" class="recording-btn" style="display: none;">
+                            <i class="fas fa-stop"></i> 停止录音
+                        </button>
+                        <div id="recording-status" style="margin-top: 10px; display: none;">
+                            <i class="fas fa-circle" style="color: red; animation: pulse 1s infinite;"></i>
+                            <span>正在录音...</span>
+                        </div>
+                    </div>
+                    <div id="reference-audio-preview" class="audio-preview" style="display: none; margin-top: 15px;">
+                        <h5>参考音频预览</h5>
+                        <audio id="reference-audio-player" controls style="width: 100%;"></audio>
                     </div>
                 </div>
                 <div class="form-group">
@@ -840,6 +912,11 @@
     </div>
 </footer>
 <script>
+    // 录音相关变量
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let audioStream = null;
+
     // 切换标签页（支持四个模块）
     function switchTab(tabName) {
         const tabs = document.querySelectorAll('.tab');
@@ -918,6 +995,143 @@
         setTimeout(() => {
             alert.style.display = 'none';
         }, 5000);
+    }
+
+    document.getElementById('start-recording').addEventListener('click', async function () {
+        try {
+            // 设置音频参数
+            const constraints = {
+                audio: {
+                    sampleRate: 16000,
+                    channelCount: 1,
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                }
+            };
+
+            audioStream = await navigator.mediaDevices.getUserMedia(constraints);
+            // 创建MediaRecorder时指定正确的MIME类型
+            const options = {
+                mimeType: 'audio/webm;codecs=opus',
+                audioBitsPerSecond: 16000
+            };
+
+            mediaRecorder = new MediaRecorder(audioStream, options);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
+
+                // 将webm转换为wav
+                const audioContext = new AudioContext({sampleRate: 16000});
+                const arrayBuffer = await audioBlob.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+                // 创建WAV文件
+                const wavBlob = await convertToWav(audioBuffer);
+                const audioUrl = URL.createObjectURL(wavBlob);
+
+                // 更新预览播放器
+                const audioPlayer = document.getElementById('reference-audio-player');
+                audioPlayer.src = audioUrl;
+                document.getElementById('reference-audio-preview').style.display = 'block';
+
+                // 将转换后的WAV文件填充到文件上传区域
+                const file = new File([wavBlob], 'recording.wav', {type: 'audio/wav'});
+                const fileInput = document.getElementById('clone-reference-audio');
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+
+                // 更新文件名显示
+                document.getElementById('clone-reference-file-name').textContent = `已选择: ${file.name}`;
+                document.getElementById('clone-reference-upload').classList.add('has-file');
+            };
+
+            mediaRecorder.start();
+            document.getElementById('start-recording').style.display = 'none';
+            document.getElementById('stop-recording').style.display = 'inline-block';
+            document.getElementById('recording-status').style.display = 'block';
+            document.getElementById('reference-audio-preview').style.display = 'none';
+        } catch (error) {
+            showAlert('clone', `录音失败: ${error.message}`, 'error');
+        }
+    });
+    // 停止录音
+    document.getElementById('stop-recording').addEventListener('click', function () {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+            audioStream.getTracks().forEach(track => track.stop());
+
+            document.getElementById('start-recording').style.display = 'inline-block';
+            document.getElementById('stop-recording').style.display = 'none';
+            document.getElementById('recording-status').style.display = 'none';
+        }
+    });
+
+    // 文件上传时清空录音
+    document.getElementById('clone-reference-audio').addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            const audioUrl = URL.createObjectURL(file);
+
+            // 更新预览播放器
+            const audioPlayer = document.getElementById('reference-audio-player');
+            audioPlayer.src = audioUrl;
+            document.getElementById('reference-audio-preview').style.display = 'block';
+        } else {
+            document.getElementById('reference-audio-preview').style.display = 'none';
+        }
+    });
+
+    // 将AudioBuffer转换为WAV格式
+    function convertToWav(audioBuffer) {
+        const numChannels = 1;
+        const sampleRate = 16000;
+        const format = 1; // PCM
+        const bitDepth = 16;
+        const bytesPerSample = bitDepth / 8;
+        const blockAlign = numChannels * bytesPerSample;
+
+        const wavData = new Uint8Array(44 + audioBuffer.length * blockAlign);
+        const view = new DataView(wavData.buffer);
+
+        // 写入WAV头部
+        writeString(view, 0, 'RIFF');
+        view.setUint32(4, 36 + audioBuffer.length * blockAlign, true);
+        writeString(view, 8, 'WAVE');
+        writeString(view, 12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, format, true);
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * blockAlign, true);
+        view.setUint16(32, blockAlign, true);
+        view.setUint16(34, bitDepth, true);
+        writeString(view, 36, 'data');
+        view.setUint32(40, audioBuffer.length * blockAlign, true);
+
+        // 写入音频数据
+        const offset = 44;
+        const channelData = audioBuffer.getChannelData(0);
+        for (let i = 0; i < channelData.length; i++) {
+            const sample = Math.max(-1, Math.min(1, channelData[i]));
+            const value = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+            view.setInt16(offset + i * 2, value, true);
+        }
+
+        return new Blob([wavData], {type: 'audio/wav'});
+    }
+
+    function writeString(view, offset, string) {
+        for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+        }
     }
 
     // 声音克隆表单提交（始终采用非流式方式）

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Time      :2025/3/15 11:37
 # Author    :Hui Huang
-import multipart
 import argparse
 import os
 from contextlib import asynccontextmanager
