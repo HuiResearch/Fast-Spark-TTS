@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="docs/zh/_img/icon.png" width="450"/>
+  <img src="docs/zh/_img/icon.png" width="450" alt="FlashTTS Logo"/>
 
-[📘Documentation](docs/en/README.MD)
+[📘 Documentation](docs/en/README.MD)
 
 [中文](README.MD) | [English](README_EN.MD)
 
@@ -9,241 +9,165 @@
 
 ---
 
-## Introduction
+# FlashTTS
 
-> Powered by models like SparkTTS, OrpheusTTS, and MegaTTS3, this project provides high-quality Mandarin speech
-> synthesis and voice cloning services. With an easy-to-use web interface, you can effortlessly generate natural,
-> human-like voices for various use cases.
+> Powered by state-of-the-art models such as **SparkTTS, OrpheusTTS, MegaTTS 3**, FlashTTS delivers high-quality Mandarin speech synthesis and zero-shot voice cloning. With a clean and intuitive Web interface, you can quickly generate natural, lifelike voices for dubbing, narration, accessibility, virtual characters, and more.
 
-> If you find this project helpful, feel free to give it a star ⭐.
+> If you find FlashTTS helpful, please leave us a ⭐ Star!
 
-## ✨ Features
+## ✨ Highlights
 
-- 🚀 **Multiple backend accelerations**: Supports `vllm`, `sglang`, `llama cpp`, and `mlx-lm` for flexible inference
-  strategies.
-- 🎯 **High concurrency**: Dynamic batching greatly improves parallel processing capability.
-- 🎛️ **Full parameter control**: Fully adjustable pitch, speed, timbre temperature, and more.
-- 📱 **Lightweight deployment**: Minimal dependencies, fast startup based on Flask and FastAPI.
-- 🎨 **Modern UI**: Clean and modern web interface.
-- 🔊 **Long-form TTS**: Supports synthesis of very long texts while maintaining consistent voice quality.
-- 🔄 **Streaming synthesis**: Real-time synthesis with immediate playback, reducing wait time and enhancing
-  interactivity.
-- 🎭 **Multi-role voice synthesis**: Enables synthesis of dialogue involving multiple characters.
+|     | Feature                   | Description                                                                 |
+|-----|---------------------------|-----------------------------------------------------------------------------|
+| 🚀  | **Multi-backend Acceleration** | Supports high-performance inference engines like `vllm`, `sglang`, `llama-cpp`, `mlx-lm`, etc. |
+| 🎯  | **High Concurrency**       | Dynamic batching and asynchronous queues to handle heavy traffic with ease   |
+| 🎛️ | **Full Parameter Control** | Adjust pitch, speaking rate, temperature, emotion tags, and more             |
+| 📱  | **Lightweight Deployment** | Built on FastAPI—start with a single command; minimal dependencies          |
+| 🔊  | **Long-form Synthesis**    | Supports very long texts while maintaining consistent voice quality         |
+| 🔄  | **Streaming TTS**          | Generate and play audio in real time; reduces wait time, enhances interactivity |
+| 🎭  | **Multi-character Dialog** | Synthesize multiple roles within the same text—ideal for script dubbing      |
+| 🎨  | **Modern Frontend**        | Web-ready, responsive interface                                             |
 
-## 🖼️ Frontend Showcase
+## 🖼️ Frontend Demo
 
 https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 
-## Voice Demos
+## 🔈 Voice Samples
 
-Here are sample voice demos cloned using the Spark-TTS model.
+Below are demos showcasing FlashTTS’s cloning capabilities across different models and characters.
 
----
-
-<table>
-<tr>
-<td align="center">
-
-**Donald Trump en**
-</td>
-<td align="center">
-
-**Donald Trump zh**
-</td>
-</tr>
-
-<tr>
-<td align="center">
-
-[Donald Trump en](https://github.com/user-attachments/assets/79d4d1d1-5579-4ddb-8092-500b3db05d45)
-
-</td>
-<td align="center">
-
-[Donald Trump zh](https://github.com/user-attachments/assets/262f4306-4a0f-4735-b4e7-708cd3193324)
-
-</td>
-</tr>
-</table>
+### SparkTTS Model
 
 <table>
 <tr>
 <td align="center">
 
-**哪吒**
+**Donald Trump (EN)**  
+[Listen](https://github.com/user-attachments/assets/79d4d1d1-5579-4ddb-8092-500b3db05d45)
+
 </td>
 <td align="center">
 
-**李靖**
+**Donald Trump (ZH)**  
+[Listen](https://github.com/user-attachments/assets/262f4306-4a0f-4735-b4e7-708cd3193324)
+
 </td>
 </tr>
-
 <tr>
 <td align="center">
 
-[哪吒](https://github.com/user-attachments/assets/4743778b-63c7-4c42-95b2-636828364d67)
+**Nezha**  
+[Listen](https://github.com/user-attachments/assets/4743778b-63c7-4c42-95b2-636828364d67)
 
 </td>
 <td align="center">
 
-[李靖](https://github.com/user-attachments/assets/b5a51fa9-c5a1-4f39-bbf8-09e73b2c1936)
+**Li Jing**  
+[Listen](https://github.com/user-attachments/assets/b5a51fa9-c5a1-4f39-bbf8-09e73b2c1936)
+
+</td>
+</tr>
+<tr>
+<td align="center">
+
+**Yu Chengdong**  
+[Listen](https://github.com/user-attachments/assets/1cd5f156-010d-4bc9-8e99-f37def54b99f)
+
+</td>
+<td align="center">
+
+**Xu Zhisheng**  
+[Listen](https://github.com/user-attachments/assets/f197ac39-5928-4ead-83d7-071b1bf5f974)
 
 </td>
 </tr>
 </table>
+
+### MegaTTS 3 Model
 
 <table>
 <tr>
 <td align="center">
 
-**余承东**
-</td>
-<td align="center">
-
-**徐志胜**
-</td>
-</tr>
-
-<tr>
-<td align="center">
-
-[余承东](https://github.com/user-attachments/assets/1cd5f156-010d-4bc9-8e99-f37def54b99f)
+**Cai Xukun**  
+[Listen](https://github.com/user-attachments/assets/bcb48ead-f157-45d7-8060-cbccf418f0ed)
 
 </td>
 <td align="center">
 
-[徐志胜](https://github.com/user-attachments/assets/f197ac39-5928-4ead-83d7-071b1bf5f974)
+**Taiyi Zhenren**  
+[Listen](https://github.com/user-attachments/assets/73edbd6b-ece3-4e22-95a2-53b7c4e45346)
 
 </td>
 </tr>
 </table>
 
----
-
-Here is a demo of cloned voices using the `MegaTTS3` model.
-
----
+### OrpheusTTS (ZH) Model
 
 <table>
 <tr>
 <td align="center">
 
-**蔡徐坤**
-</td>
-<td align="center">
-
-**太乙真人**
-</td>
-</tr>
-
-<tr>
-<td align="center">
-
-[蔡徐坤](https://github.com/user-attachments/assets/bcb48ead-f157-45d7-8060-cbccf418f0ed)
+**Changle**  
+[Listen](https://github.com/user-attachments/assets/271bd5a3-dd56-430a-87d0-ebea0e397a89)
 
 </td>
 <td align="center">
 
-[太乙真人](https://github.com/user-attachments/assets/73edbd6b-ece3-4e22-95a2-53b7c4e45346)
+**Baizhi**  
+[Listen](https://github.com/user-attachments/assets/e012c580-840f-401c-99f5-665c72f6b89f)
 
 </td>
 </tr>
 </table>
 
----
+## Quick Start
 
-Here is a demo of synthesized voices using the `OrpheusTTS zh` model.
+It is recommended to install `flashtts` in a **Python 3.8–3.12** environment via pip:
 
----
+```bash
+pip install flashtts
+```
 
-<table>
-<tr>
-<td align="center">
+For detailed installation steps, please refer to: [installation guide](docs/zh/get_started/installation.md)
 
-**长乐**
-</td>
-<td align="center">
+## ⚡ Inference Speed
 
-**白芷**
-</td>
-</tr>
+Test environment: `A800 GPU` · Model: `Spark-TTS-0.5B` · Test script: [speed_test.py](examples/speed_test.py)
 
-<tr>
-<td align="center">
+| Scenario | Engine      | Device | Audio Length (s) | Inference Time (s) | RTF  |
+|:--------:|:-----------:|:------:|:----------------:|:------------------:|:----:|
+| Short    | llama-cpp   | CPU    | 7.48             | 6.81               | 0.91 |
+| Short    | torch       | GPU    | 7.18             | 7.68               | 1.07 |
+| Short    | vllm        | GPU    | 7.24             | 1.66               | 0.23 |
+| Short    | sglang      | GPU    | 7.58             | 1.07               | 0.14 |
+| Long     | llama-cpp   | CPU    | 121.98           | 117.83             | 0.97 |
+| Long     | torch       | GPU    | 113.70           | 107.17             | 0.94 |
+| Long     | vllm        | GPU    | 111.82           | 7.28               | 0.07 |
+| Long     | sglang      | GPU    | 117.02           | 4.20               | 0.04 |
 
-[长乐](https://github.com/user-attachments/assets/271bd5a3-dd56-430a-87d0-ebea0e397a89)
+> **RTF < 1** means real-time synthesis.
 
-</td>
-<td align="center">
+## ⚙️ Usage Tips
 
-[白芷](https://github.com/user-attachments/assets/e012c580-840f-401c-99f5-665c72f6b89f)
+1. **SparkTTS** weights must be `bfloat16` or `float32`; using `float16` will cause errors.  
+2. If you experience long silent gaps, try increasing `repetition_penalty` (> 1.0).  
+3. **OrpheusTTS** supports inserting `<tag>` in text to control emotion. See `LANG_MAP` in [`orpheus_engine.py`](flashtts/engine/orpheus_engine.py).  
+4. For safety reasons, **MegaTTS 3** does not publish the WaveVAE encoder. Please follow the official instructions to download it: [reference audio](https://drive.google.com/drive/folders/1QhcHWcy20JfqWjgqZX1YM3I6i9u4oNlr).
 
-</td>
-</tr>
-</table>
+## 🤝 Acknowledgments
 
----
-
-## Inference Speed
-
-- GPU: `A800`
-- Model: `Spark-TTS-0.5B`
-- Refer to [speed_test.py](examples/speed_test.py) for test parameters and methods.
-- Audio length and inference time are measured in seconds.
-- Evaluated on both short and long text scenarios.
-- Official codes not benchmarked; feel free to run your own tests if needed.
-
-| Scenario |  Engine   | Device | Audio Length | Cost Time |  RTF  |
-|:--------:|:---------:|:------:|:------------:|:---------:|:-----:|
-|  Short   | llama-cpp |  CPU   |     7.48     |   6.808   | 0.910 |
-|  Short   |   torch   |  GPU   |     7.18     |   7.675   | 1.069 |
-|  Short   |   vllm    |  GPU   |     7.24     |   1.664   | 0.230 |
-|  Short   |  sglang   |  GPU   |     7.58     |   1.073   | 0.142 |
-|   Long   | llama-cpp |  CPU   |    121.98    |  117.828  | 0.966 |
-|   Long   |   torch   |  GPU   |    113.7     |  107.167  | 0.943 |
-|   Long   |   vllm    |  GPU   |    111.82    |   7.282   | 0.065 |
-|   Long   |  sglang   |  GPU   |    117.02    |   4.197   | 0.036 |
-
-## Notes
-
-1. The `SparkTTS` model does **not** support weight quantization to `float16`. Use `bfloat16` or `float32` for
-   `torch_dtype`.
-2. If there's a long silent segment in output, try adjusting `repetition_penalty` > 1.0 to reduce the chance of
-   repeating silent tokens (silent token ID for SparkTTS is `163406`).
-3. `OrpheusTTS` supports emotion tags. Just insert `<tag>` directly into the text. Refer to supported tags in
-   `[orpheus_engine.py](fast_tts/engine/orpheus_engine.py)` via `LANG_MAP`.
-4. For security reasons, the `MegaTTS3` team hasn't uploaded WaveVAE encoder parameters. Use the provided reference
-   audios here for
-   inference: [Reference Audio](https://drive.google.com/drive/folders/1QhcHWcy20JfqWjgqZX1YM3I6i9u4oNlr). For custom
-   audio, follow the official
-   instructions: [MegaTTS3](https://github.com/bytedance/MegaTTS3/tree/main?tab=readme-ov-file#inference)
-
-## Acknowledgements
-
-1. [Spark-TTS](https://github.com/SparkAudio/Spark-TTS)
-2. [Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)
-3. [MegaTTS3](https://github.com/bytedance/MegaTTS3)
+- [Spark-TTS](https://github.com/SparkAudio/Spark-TTS)  
+- [Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)  
+- [MegaTTS 3](https://github.com/bytedance/MegaTTS3)  
 
 ## ⚠️ Disclaimer
 
-This project offers a zero-shot voice cloning TTS model intended for academic research, education, and legitimate
-applications such as personalized voice generation, assistive tech, and linguistic studies.
+FlashTTS is provided for academic research, education, and lawful purposes only, such as accessibility assistance and personalized speech synthesis. Do **not** use it for fraud, impersonation, deepfakes, or other illegal activities. Users are responsible for any misuse.
 
-Please note:
+## License
 
-- Do **not** use this model for unauthorized voice cloning, impersonation, fraud, scams, deepfakes, or any illegal
-  activities.
-- Always comply with local laws and ethical guidelines.
-- The developers are **not** responsible for any misuse of this model.
-
-We advocate responsible AI development and encourage the community to uphold safety and ethical standards in AI research
-and deployment.
-
-## License & Attribution
-
-This project is built on [Spark-TTS](https://github.com/SparkAudio/Spark-TTS) and follows the same open-source
-license.  
-See [SparkTTS License](https://github.com/SparkAudio/Spark-TTS/blob/main/LICENSE) for details.
+This project follows the same license as Spark-TTS. See [LICENSE](https://github.com/SparkAudio/Spark-TTS/blob/main/LICENSE) for details.
 
 ## Star History
 
