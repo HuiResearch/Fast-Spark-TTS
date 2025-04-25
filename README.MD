@@ -225,4 +225,4 @@ FlashTTS 仅供学术研究、教育与合法用途，如无障碍辅助、个�
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=HuiResearch/Fast-Spark-TTS&type=Date)](https://www.star-history.com/#HuiResearch/Fast-Spark-TTS&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=FlashTTS/FlashTTS&type=Date)](https://www.star-history.com/#FlashTTS/FlashTTS&Date)

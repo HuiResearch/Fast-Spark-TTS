@@ -31,7 +31,7 @@ setup(
     keywords=["flashtts", "tts", "sparktts", "spark-tts", "megatts3", "orpheus-tts", "vllm", "sglang", "llama-cpp"],
     author='HuangHui',
     author_email='m13021933043@163.com',
-    url='https://github.com/HuiResearch/Fast-Spark-TTS',
+    url='https://github.com/HuiResearch/FlashTTS',
     license='MIT',
     packages=find_packages(),
     include_package_data=True,

@@ -171,4 +171,4 @@ This project follows the same license as Spark-TTS. See [LICENSE](https://github
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=HuiResearch/Fast-Spark-TTS&type=Date)](https://www.star-history.com/#HuiResearch/Fast-Spark-TTS&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=FlashTTS/FlashTTS&type=Date)](https://www.star-history.com/#FlashTTS/FlashTTS&Date)
