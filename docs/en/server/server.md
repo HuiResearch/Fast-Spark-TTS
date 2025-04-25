@@ -88,7 +88,8 @@ curl -X POST http://localhost:8000/clone_voice \
 |------------------------|---------|----------|----------------------------------------------------------------------------|
 | `text`                 | string  | Yes      | Text to synthesize                                                         |
 | `reference_audio`      | string  | No       | Reference audio (URL or base64 string). Use this or `reference_audio_file` |
-| `reference_audio_file` | file    | No       | Upload reference audio file (WAV/MP3, etc.)                                |
+| `reference_audio_file` | file    | No       | Upload reference audio file (WAV)                                          |
+| `latent_file`          | file    | No       | Upload latent file (npy) for MegaTTS3.                                     |
 | `reference_text`       | string  | No       | Transcription of the reference audio                                       |
 | `pitch`                | enum    | No       | Pitch: `very_low`, `low`, `moderate`, `high`, `very_high`                  |
 | `speed`                | enum    | No       | Speed: `very_low`, `low`, `moderate`, `high`, `very_high`                  |
@@ -165,5 +166,43 @@ curl -X POST http://localhost:8000/clone_voice \
   {
     "success": true,
     "roles": ["alice", "bob", "tara"]
+  }
+  ```
+
+#### 4.6 Add Role: `POST /add_speaker`
+
+- **Content-Type**: `multipart/form-data`
+- **Parameter Description**:
+
+| Field            | Type   | Required | Description                                                                                |
+|------------------|--------|----------|--------------------------------------------------------------------------------------------|
+| `name`           | string | Yes      | Name of the role to be added                                                               |
+| `audio`          | string | No       | URL of the reference audio sample or a base64-encoded string (alternative to `audio_file`) |
+| `reference_text` | string | No       | Text description or transcription corresponding to the reference audio                     |
+| `audio_file`     | file   | No       | Upload the reference audio file (WAV format), alternative to `audio`                       |
+| `latent_file`    | file   | No       | Latent file used by the Mega engine (used in combination with `audio`/`audio_file`)        |
+
+- **Response Example**:
+  ```json
+  {
+    "success": true,
+    "role": "Role Name"
+  }
+  ```
+
+#### 4.7 Delete Role: `POST /delete_speaker`
+
+- **Content-Type**: `multipart/form-data`
+- **Parameter Description**:
+
+| Field  | Type   | Required | Description                    |
+|--------|--------|----------|--------------------------------|
+| `name` | string | Yes      | Name of the role to be deleted |
+
+- **Response Example**:
+  ```json
+  {
+    "success": true,
+    "role": "Role Name"
   }
   ```

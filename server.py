@@ -34,7 +34,7 @@ def find_ref_files(role_path: str, suffix: str = '.wav'):
 async def load_roles(async_engine: AutoEngine, role_dir: Optional[str] = None):
     # 加载已有的角色音频
     if role_dir is not None and os.path.exists(role_dir):
-        logger.info(f"loading roles：{role_dir}")
+        logger.info(f"Loading roles from: {role_dir}")
         role_list = os.listdir(role_dir)
         exist_roles = []
         for role in role_list:
@@ -52,7 +52,7 @@ async def load_roles(async_engine: AutoEngine, role_dir: Optional[str] = None):
             role_text = None
             if async_engine.engine_name == 'mega':
                 if npy_file is None:
-                    logger.warning("MegaTTS克隆音频需要参考音频的latent_file(.npy)。")
+                    logger.warning("MegaTTS requires a latent_file (.npy) along with the reference audio for cloning.")
                     continue
                 else:
                     ref_audio = (wav_file, npy_file)
@@ -71,7 +71,7 @@ async def load_roles(async_engine: AutoEngine, role_dir: Optional[str] = None):
                 audio=ref_audio,
                 reference_text=role_text,
             )
-        logger.info(f"角色库加载完毕，角色有：{'、'.join(exist_roles)}")
+        logger.info(f"Finished loading roles: {', '.join(exist_roles)}")
 
 
 async def warmup_engine(async_engine: AutoEngine):
@@ -155,58 +155,65 @@ def build_app(args) -> FastAPI:
 
 if __name__ == '__main__':
     # 使用 argparse 获取启动参数
-    parser = argparse.ArgumentParser(description="FastTTS 后端")
+    parser = argparse.ArgumentParser(description="FastTTS Backend")
     parser.add_argument("--model_path", type=str, required=True,
-                        help="模型路径")
+                        help="Path to the TTS model")
 
     parser.add_argument("--backend", type=str, required=True,
                         choices=["llama-cpp", "vllm", "sglang", "torch", "mlx-lm"],
-                        help="引擎类型，如 llama-cpp、vllm、sglang、mlx-lm 或 torch")
+                        help="Backend type, e.g., llama-cpp, vllm, sglang, mlx-lm, or torch")
     parser.add_argument(
         "--lang", type=str, default=None,
-        help="Orpheus TTS 模型的语言类型，根据自己模型设置：mandarin, french, german, korean, hindi, spanish, italian, spanish_italian, english")
+        help="Language type for Orpheus TTS model, e.g., mandarin, french, german, korean, hindi, spanish, italian, spanish_italian, english")
     parser.add_argument("--snac_path", type=str, default=None,
-                        help="OrpheusTTS 的snac模块地址")
+                        help="Path to the SNAC module for OrpheusTTS")
     parser.add_argument("--llm_device", type=str, default="auto",
-                        help="llm 设备，例如 cpu 或 cuda:0")
+                        help="Device for the LLM, e.g., cpu or cuda")
     parser.add_argument("--tokenizer_device", type=str, default="auto",
-                        help="audio tokenizer 设备")
+                        help="Device for the audio tokenizer")
     parser.add_argument("--detokenizer_device", type=str, default="auto",
-                        help="audio detokenizer 设备")
+                        help="Device for the audio detokenizer")
     parser.add_argument("--wav2vec_attn_implementation", type=str, default="eager",
                         choices=["sdpa", "flash_attention_2", "eager"],
-                        help="wav2vec 的 attn_implementation 方式")
+                        help="Attention implementation method for wav2vec")
     parser.add_argument("--llm_attn_implementation", type=str, default="eager",
                         choices=["sdpa", "flash_attention_2", "eager"],
-                        help="torch generator 的 attn_implementation 方式")
+                        help="Attention implementation method for the torch generator")
     parser.add_argument("--max_length", type=int, default=32768,
-                        help="最大生成长度")
+                        help="Maximum generation length")
     parser.add_argument("--llm_gpu_memory_utilization", type=float, default=0.6,
-                        help="vllm和sglang暂用显存比例，单卡可降低该参数")
+                        help="GPU memory utilization ratio for vllm and sglang backends")
     parser.add_argument("--torch_dtype", type=str, default="auto",
                         choices=['float16', "bfloat16", 'float32', 'auto'],
-                        help="torch generator中llm使用的dtype。")
+                        help="Data type used by the LLM in torch generator")
     parser.add_argument(
         "--cache_implementation", type=str, default=None,
-        help='将在“generate”中实例化的缓存类的名称，用于更快地解码. 可能设置的值有：static、offloaded_static、sliding_window、hybrid、mamba、quantized。'
+        help='Name of the cache class used in "generate" for faster decoding. Options: static, offloaded_static, sliding_window, hybrid, mamba, quantized.'
     )
     parser.add_argument("--role_dir", type=str, default=None,
-                        help="存放已有角色信息的目录")
+                        help="Directory containing predefined speaker roles")
     parser.add_argument("--api_key", type=str, default=None,
-                        help="设置接口访问限制：Api key")
-    parser.add_argument("--seed", type=int, default=0, help="随机种子")
-    parser.add_argument("--batch_size", type=int, default=1, help="音频处理组件单批次处理的最大请求数。")
-    parser.add_argument("--llm_batch_size", type=int, default=256, help="LLM模块单批次处理的最大请求数。")
-    parser.add_argument("--wait_timeout", type=float, default=0.01, help="动态批处理请求超时阈值，单位为秒。")
-    parser.add_argument("--host", type=str, default="0.0.0.0", help="服务监听地址")
-    parser.add_argument("--port", type=int, default=8000, help="服务监听端口")
-    parser.add_argument("--ssl_keyfile", type=str, default=None, help="The file path to the SSL key file.")
-    parser.add_argument("--ssl_certfile", type=str, default=None, help="The file path to the SSL certificate file.")
+                        help="API key for request authentication")
+    parser.add_argument("--seed", type=int, default=0, help="Random seed")
+    parser.add_argument("--batch_size", type=int, default=1,
+                        help="Max number of audio requests processed in a single batch")
+    parser.add_argument("--llm_batch_size", type=int, default=256,
+                        help="Max number of LLM requests processed in a single batch")
+    parser.add_argument("--wait_timeout", type=float, default=0.01,
+                        help="Timeout for dynamic batching (in seconds)")
+    parser.add_argument("--host", type=str, default="0.0.0.0",
+                        help="Host address for the server")
+    parser.add_argument("--port", type=int, default=8000,
+                        help="Port number for the server")
+    parser.add_argument("--ssl_keyfile", type=str, default=None,
+                        help="Path to the SSL key file")
+    parser.add_argument("--ssl_certfile", type=str, default=None,
+                        help="Path to the SSL certificate file")
     args = parser.parse_args()
 
     setup_logging()
 
-    logger.info("启动 FastTTS 服务")
+    logger.info("Starting FastTTS service...")
     logger.info(f"Config: {args}")
     app = build_app(args)
     uvicorn.run(app, host=args.host, port=args.port, ssl_keyfile=args.ssl_keyfile, ssl_certfile=args.ssl_certfile)

@@ -217,3 +217,52 @@ def openai_speech():
 1. Initialize the OpenAI client and set the base URL.
 2. Call `audio.speech.create` with streaming enabled.
 3. Save the resulting audio file.
+
+---
+
+## 6. Add Speaker (`/add_speaker`)
+
+- **Endpoint**: `POST {BASE_URL}/add_speaker`
+- **Content-Type**: `multipart/form-data`
+
+### Example Code
+
+```python
+import requests
+
+
+def add_speaker():
+    # Choose to use a URL/base64 or a local file
+    files = {
+        "audio_file": open("speaker_ref.wav", "rb"),
+        "latent_file": open("speaker_latent.npy", "rb")  # If using the Mega engine
+    }
+    data = {"name": "new_speaker", "reference_text": "Sample audio description"}
+    resp = requests.post(f"{BASE_URL}/add_speaker", data=data, files=files)
+    if resp.status_code == 200:
+        print("Speaker added successfully:", resp.json())
+    else:
+        print("Failed to add speaker:", resp.status_code, resp.text)
+```
+
+---
+
+## 7. Delete Speaker (`/delete_speaker`)
+
+- **Endpoint**: `POST {BASE_URL}/delete_speaker`
+- **Content-Type**: `multipart/form-data`
+
+### Example Code
+
+```python
+import requests
+
+
+def delete_speaker():
+    data = {"name": "new_speaker"}
+    resp = requests.post(f"{BASE_URL}/delete_speaker", data=data)
+    if resp.status_code == 200:
+        print("Speaker deleted successfully:", resp.json())
+    else:
+        print("Failed to delete speaker:", resp.status_code, resp.text)
+```

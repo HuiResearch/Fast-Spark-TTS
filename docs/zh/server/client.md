@@ -211,3 +211,51 @@ def openai_speech():
 1. 初始化 OpenAI 客户端，指定 base_url。
 2. 调用 `audio.speech.create` 并接收流。
 3. 保存输出。
+
+---
+
+## 6. 添加角色（/add_speaker）
+
+- **接口地址**：`POST {BASE_URL}/add_speaker`
+- **Content-Type**：`multipart/form-data`
+
+### 示例代码
+
+```python
+import requests
+
+
+def add_speaker():
+    # 选择使用 URL/base64 或本地文件
+    files = {"audio_file": open("speaker_ref.wav", "rb"),
+             "latent_file": open("speaker_latent.npy", "rb")}  # 如果使用 Mega 引擎
+    data = {"name": "new_speaker", "reference_text": "示例音频描述"}
+    resp = requests.post(f"{BASE_URL}/add_speaker", data=data, files=files)
+    if resp.status_code == 200:
+        print("添加角色成功：", resp.json())
+    else:
+        print("添加角色失败：", resp.status_code, resp.text)
+```
+
+---
+
+## 7. 删除角色（/delete_speaker）
+
+- **接口地址**：`POST {BASE_URL}/delete_speaker`
+- **Content-Type**：`multipart/form-data`
+
+### 示例代码
+
+```python
+import requests
+
+
+def delete_speaker():
+    data = {"name": "new_speaker"}
+    resp = requests.post(f"{BASE_URL}/delete_speaker", data=data)
+    if resp.status_code == 200:
+        print("删除角色成功：", resp.json())
+    else:
+        print("删除角色失败：", resp.status_code, resp.text)
+```
+

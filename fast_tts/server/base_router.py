@@ -2,16 +2,16 @@
 # Project : Fast-Spark-TTS
 # Time    : 2025/4/7 16:14
 # Author  : Hui Huang
-import base64
-import io
 from typing import Optional, Annotated, Literal
-
-import httpx
-import numpy as np
 from fastapi import HTTPException, Request, APIRouter, UploadFile, File, Form, Depends
 from fastapi.responses import StreamingResponse, JSONResponse, Response, FileResponse
 from .protocol import CloneRequest, SpeakRequest, MultiSpeakRequest
 from .utils.audio_writer import StreamingAudioWriter
+from .utils.utils import (
+    load_audio_bytes,
+    load_latent_file,
+    generate_audio_stream,
+    generate_audio)
 from ..engine import AutoEngine
 from ..logger import get_logger
 
@@ -21,28 +21,6 @@ base_router = APIRouter(
     tags=["Fast-TTS"],
     responses={404: {"description": "Not found"}},
 )
-
-
-async def generate_audio_stream(generator, data, writer: StreamingAudioWriter, raw_request: Request):
-    async for chunk in generator(**data):
-        # Check if client is still connected
-        is_disconnected = raw_request.is_disconnected
-        if callable(is_disconnected):
-            is_disconnected = await is_disconnected()
-        if is_disconnected:
-            logger.info("Client disconnected, stopping audio generation")
-            break
-
-        audio = writer.write_chunk(chunk, finalize=False)
-        yield audio
-    yield writer.write_chunk(finalize=True)
-
-
-async def generate_audio(audio: np.ndarray, writer: StreamingAudioWriter):
-    output = writer.write_chunk(audio, finalize=False)
-    final = writer.write_chunk(finalize=True)
-    output = output + final
-    return output
 
 
 @base_router.get("/")
@@ -55,12 +33,70 @@ async def favicon():
     return FileResponse("templates/favicon.ico")
 
 
-async def get_audio_bytes_from_url(url: str) -> bytes:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        if response.status_code != 200:
-            raise HTTPException(status_code=400, detail="无法从指定 URL 下载参考音频")
-        return response.content
+@base_router.post("/add_speaker")
+async def add_speaker(
+        raw_request: Request,
+        name: str = Form(..., description="The name of the speaker"),
+        audio: Optional[str] = Form(None,
+                                    description="A reference audio sample of the speaker (URL or base64 string). Use this or `audio_file`"),
+        reference_text: Optional[str] = Form(None,
+                                             description="Optional transcript or description corresponding to the reference audio."),
+
+        audio_file: Optional[UploadFile] = File(None,
+                                                description="Upload reference audio file (WAV) of the speaker. Use this or `audio`"),
+        latent_file: Optional[UploadFile] = File(None, description="latent file for mega-tts.")):
+    engine: AutoEngine = raw_request.app.state.engine
+    if engine.engine_name == 'orpheus':
+        logger.error("OrpheusTTS does not currently support adding custom voice characters.")
+        raise HTTPException(status_code=500,
+                            detail="OrpheusTTS does not currently support adding custom voice characters.")
+
+    bytes_io = await load_audio_bytes(audio_file=audio_file, audio=audio)
+
+    if engine.engine_name == 'mega':
+        latent_io = await load_latent_file(latent_file=latent_file)
+        reference_audio = (bytes_io, latent_io)
+    else:
+        reference_audio = bytes_io
+
+    try:
+        await engine.add_speaker(name=name, audio=reference_audio, reference_text=reference_text)
+    except Exception as e:
+        try:
+            await engine.delete_speaker(name=name)
+        except:
+            pass
+        err_msg = f'Failed to add the voice character "{name}": {str(e)}'
+        logger.error(err_msg)
+        raise HTTPException(status_code=500, detail=err_msg)
+    return JSONResponse(
+        content={
+            "success": True,
+            "role": name
+        })
+
+
+@base_router.post("/delete_speaker")
+async def delete_speaker(
+        raw_request: Request,
+        name: str = Form(..., description="The name of the speaker")):
+    engine: AutoEngine = raw_request.app.state.engine
+    if engine.engine_name == 'orpheus':
+        logger.error("OrpheusTTS does not currently support deleting custom voice characters.")
+        raise HTTPException(status_code=500,
+                            detail="OrpheusTTS does not currently support deleting custom voice characters.")
+    try:
+        await engine.delete_speaker(name=name)
+    except Exception as e:
+        err_msg = f'Failed to remove the voice character "{name}": {str(e)}'
+        logger.error(err_msg)
+        raise HTTPException(status_code=500, detail=err_msg)
+    return JSONResponse(
+        content={
+            "success": True,
+            "role": name
+        }
+    )
 
 
 def parse_clone_form(
@@ -107,40 +143,13 @@ async def clone_voice(
 ):
     engine: AutoEngine = raw_request.app.state.engine
     if engine.engine_name == 'orpheus':
-        logger.error("OrpheusTTS 暂不支持语音克隆.")
-        raise HTTPException(status_code=500, detail="OrpheusTTS 暂不支持该功能.")
+        logger.error("OrpheusTTS does not currently support voice cloning.")
+        raise HTTPException(status_code=500, detail="OrpheusTTS does not currently support voice cloning.")
 
-    if reference_audio_file is None:
-        # 根据 reference_audio 内容判断读取方式
-        if req.reference_audio.startswith("http://") or req.reference_audio.startswith("https://"):
-            audio_bytes = await get_audio_bytes_from_url(req.reference_audio)
-        else:
-            try:
-                audio_bytes = base64.b64decode(req.reference_audio)
-            except Exception as e:
-                logger.warning("无效的 base64 音频数据: " + str(e))
-                raise HTTPException(status_code=400, detail="无效的 base64 音频数据: " + str(e))
-        # 利用 BytesIO 包装字节数据，然后使用 soundfile 读取为 numpy 数组
-        try:
-            bytes_io = io.BytesIO(audio_bytes)
-        except Exception as e:
-            logger.warning("读取参考音频失败: " + str(e))
-            raise HTTPException(status_code=400, detail="读取参考音频失败: " + str(e))
-    else:
-        content = await reference_audio_file.read()
-        if not content:
-            logger.warning("参考音频文件为空")
-            raise HTTPException(status_code=400, detail="参考音频文件为空")
-        bytes_io = io.BytesIO(content)
+    bytes_io = await load_audio_bytes(audio_file=reference_audio_file, audio=req.reference_audio)
 
     if engine.engine_name == 'mega':
-        if latent_file is None:
-            err_msg = "MegaTTS克隆音频需要上传参考音频的latent_file(.npy)。"
-            logger.warning(err_msg)
-            raise HTTPException(status_code=400, detail=err_msg)
-        else:
-            contents = await latent_file.read()
-            latent_io = io.BytesIO(contents)
+        latent_io = await load_latent_file(latent_file=latent_file)
         reference_audio = (bytes_io, latent_io)
     else:
         reference_audio = bytes_io
@@ -203,7 +212,7 @@ async def clone_voice(
                 window_size=req.window_size,
             )
         except Exception as e:
-            logger.warning(f"克隆语音失败: {e}")
+            logger.warning(f"Failed to clone voice: {e}")
             raise HTTPException(status_code=500, detail=str(e))
         headers = {
             "Content-Disposition": f"attachment; filename=speech.{req.response_format}",
@@ -231,7 +240,7 @@ async def audio_roles(raw_request: Request):
 async def speak(req: SpeakRequest, raw_request: Request):
     engine: AutoEngine = raw_request.app.state.engine
     if req.name not in engine.list_roles():
-        err_msg = f"{req.name} 不在已有的角色列表中。"
+        err_msg = f'"{req.name}" is not in the list of existing roles: {", ".join(engine.list_roles())}'
         logger.warning(err_msg)
         raise HTTPException(status_code=500, detail=err_msg)
 
@@ -291,7 +300,7 @@ async def speak(req: SpeakRequest, raw_request: Request):
                 window_size=req.window_size,
             )
         except Exception as e:
-            logger.warning(f"角色语音合成失败: {e}")
+            logger.warning(f"Voice synthesis for the role failed: {e}")
             raise HTTPException(status_code=500, detail=str(e))
         headers = {
             "Content-Disposition": f"attachment; filename=speech.{req.response_format}",
@@ -359,7 +368,7 @@ async def multi_speak(req: MultiSpeakRequest, raw_request: Request):
                 window_size=req.window_size,
             )
         except Exception as e:
-            logger.warning(f"多角色语音合成失败: {e}")
+            logger.warning(f"Multi-role voice synthesis failed: {e}")
             raise HTTPException(status_code=500, detail=str(e))
         headers = {
             "Content-Disposition": f"attachment; filename=speech.{req.response_format}",

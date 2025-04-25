@@ -163,5 +163,40 @@ curl -X POST http://localhost:8000/clone_voice \
   }
   ```
 
+#### 4.6 添加角色：`POST /add_speaker`
 
+- **Content-Type**: `multipart/form-data`
+- **参数说明**：
 
+| 字段               | 类型     | 必填 | 描述                                                |
+|------------------|--------|----|---------------------------------------------------|
+| `name`           | string | 是  | 要添加的角色名称                                          |
+| `audio`          | string | 否  | 引用音频样本 URL 或 base64 编码字符串，与 `audio_file` 二选一      |
+| `reference_text` | string | 否  | 与引用音频对应的文本描述或转录                                   |
+| `audio_file`     | file   | 否  | 上传引用音频文件（WAV），与 `audio` 二选一                       |
+| `latent_file`    | file   | 否  | Mega 引擎使用的 latent 文件（与 `audio`/`audio_file` 组合使用） |
+
+- **响应示例**：
+  ```json
+  {
+    "success": true,
+    "role": "角色名"
+  }
+  ```
+
+#### 4.7 删除角色：`POST /delete_speaker`
+
+- **Content-Type**: `multipart/form-data`
+- **参数说明**：
+
+| 字段     | 类型     | 必填 | 描述       |
+|--------|--------|----|----------|
+| `name` | string | 是  | 要删除的角色名称 |
+
+- **响应示例**：
+  ```json
+  {
+    "success": true,
+    "role": "角色名"
+  }
+  ```
