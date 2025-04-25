@@ -9,10 +9,12 @@ import soundfile as sf
 import torch
 import numpy as np
 from ..llm import initialize_llm
-from .utils import split_text, parse_multi_speaker_text, limit_concurrency
+from .utils import split_text, parse_multi_speaker_text, limit_concurrency, contains_chinese
 from functools import partial
 from abc import ABC, abstractmethod
 from ..logger import get_logger
+from tn.chinese.normalizer import Normalizer as ZhNormalizer
+from tn.english.normalizer import Normalizer as EnNormalizer
 
 logger = get_logger()
 
@@ -173,6 +175,8 @@ class BaseEngine(Engine):
             **kwargs
         )
         self._batch_size = llm_batch_size
+        self.zh_normalizer = ZhNormalizer(overwrite_cache=False, remove_erhua=False, remove_interjections=False)
+        self.en_normalizer = EnNormalizer(overwrite_cache=False)
 
     def list_roles(self) -> list[str]:
         raise NotImplementedError(f"List_roles not implemented for {self.__class__.__name__}")
@@ -198,13 +202,18 @@ class BaseEngine(Engine):
     def write_audio(self, audio: np.ndarray, filepath: str):
         sf.write(filepath, audio, self.SAMPLE_RATE, "PCM_16")
 
-    def split_text(
+    def preprocess_text(
             self,
             text: str,
             length_threshold: int = 50,
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None
     ) -> list[str]:
+        if contains_chinese(text):
+            text = self.zh_normalizer.normalize(text)
+        else:
+            text = self.en_normalizer.normalize(text)
+
         tokenize_fn = partial(
             self.generator.tokenizer.encode,
             add_special_tokens=False,

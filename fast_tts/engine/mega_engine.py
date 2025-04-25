@@ -137,7 +137,7 @@ class AsyncMega3Engine(BaseEngine):
             t_w: float = 2.5,
             **kwargs
     ) -> np.ndarray:
-        segments = self.split_text(
+        segments = self.preprocess_text(
             text,
             window_size=window_size,
             split_fn=split_fn,

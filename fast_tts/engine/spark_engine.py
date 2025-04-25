@@ -112,14 +112,20 @@ def process_prompt(
     )
 
     attribte_tokens = None
-    if pitch is not None and speed is not None:
-        pitch_level_id = LEVELS_MAP[pitch]
-        pitch_label_tokens = f"<|pitch_label_{pitch_level_id}|>"
-        speed_level_id = LEVELS_MAP[speed]
-        speed_label_tokens = f"<|speed_label_{speed_level_id}|>"
-        attribte_tokens = "".join(
-            [pitch_label_tokens, speed_label_tokens]
-        )
+    if pitch is not None or speed is not None:
+        if pitch is None:
+            pitch = "moderate"
+        if speed is None:
+            speed = "moderate"
+
+        if pitch != 'moderate' or speed != 'moderate':
+            pitch_level_id = LEVELS_MAP[pitch]
+            pitch_label_tokens = f"<|pitch_label_{pitch_level_id}|>"
+            speed_level_id = LEVELS_MAP[speed]
+            speed_label_tokens = f"<|speed_label_{speed_level_id}|>"
+            attribte_tokens = "".join(
+                [pitch_label_tokens, speed_label_tokens]
+            )
     audio_text = text if prompt_text is None or len(prompt_text) == 0 else (prompt_text + text)
     inputs = [
         TASK_TOKEN_MAP["tts"],
@@ -386,7 +392,7 @@ class AsyncSparkEngine(BaseEngine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> np.ndarray:
-        segments = self.split_text(
+        segments = self.preprocess_text(
             text,
             window_size=window_size,
             split_fn=split_fn,
@@ -504,7 +510,7 @@ class AsyncSparkEngine(BaseEngine):
         fade_out = np.linspace(1, 0, cross_fade_samples)
         fade_in = np.linspace(0, 1, cross_fade_samples)
 
-        segments = self.split_text(
+        segments = self.preprocess_text(
             text,
             window_size=window_size,
             split_fn=split_fn,
@@ -620,7 +626,7 @@ class AsyncSparkEngine(BaseEngine):
             acoustic_tokens: Optional[SparkAcousticTokens | str] = None,
             return_acoustic_tokens: bool = False,
             **kwargs):
-        segments = self.split_text(
+        segments = self.preprocess_text(
             text,
             window_size=window_size,
             split_fn=split_fn,
@@ -795,7 +801,7 @@ class AsyncSparkEngine(BaseEngine):
         fade_out = np.linspace(1, 0, cross_fade_samples)
         fade_in = np.linspace(0, 1, cross_fade_samples)
 
-        segments = self.split_text(
+        segments = self.preprocess_text(
             text,
             window_size=window_size,
             split_fn=split_fn,

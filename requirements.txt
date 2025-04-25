@@ -13,3 +13,4 @@ librosa
 pyloudnorm
 openai-whisper
 python-multipart
+WeTextProcessing==1.0.4.1

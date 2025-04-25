@@ -49,6 +49,13 @@ cd Fast-Spark-TTS
 pip install -r requirements.txt
 ```
 
+如果windows环境遇到安装`WeTextProcessing`出错，需要vs c++编译器时，可以使用`conda`先安装`pynini==2.1.6`:
+
+```bash
+conda install -c conda-forge pynini==2.1.6
+pip install WeTextProcessing==1.0.4.1
+```
+
 #### 3. 推理后端安装（按需选择一项）
 
 - **vLLM** (版本需 > 0.7.2)

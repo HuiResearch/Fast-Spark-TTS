@@ -50,6 +50,13 @@ cd Fast-Spark-TTS
 pip install -r requirements.txt
 ```
 
+If you encounter an error installing `WeTextProcessing` in a Windows environment due to the need for a VS C++ compiler, you can first install `pynini==2.1.6` using `conda`:
+
+```bash
+conda install -c conda-forge pynini==2.1.6
+pip install WeTextProcessing==1.0.4.1
+```
+
 #### 3. Install Inference Backend (Choose One)
 
 - **vLLM** (version > 0.7.2)

@@ -318,7 +318,7 @@ class AsyncOrpheusEngine(BaseEngine):
         if pitch is not None or speed is not None:
             logger.warning("OrpheusTTS does not support adjusting pitch and speed.")
         self.set_seed(seed=self.seed)
-        segments = self.split_text(
+        segments = self.preprocess_text(
             text=text,
             length_threshold=length_threshold,
             window_size=window_size,
@@ -366,7 +366,7 @@ class AsyncOrpheusEngine(BaseEngine):
         if pitch is not None or speed is not None:
             logger.warning("OrpheusTTS does not support adjusting pitch and speed.")
         self.set_seed(seed=self.seed)
-        segments = self.split_text(
+        segments = self.preprocess_text(
             text=text,
             length_threshold=length_threshold,
             window_size=window_size,
