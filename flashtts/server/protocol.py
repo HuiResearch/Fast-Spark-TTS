@@ -198,7 +198,7 @@ class ModelCard(BaseModel):
     id: str
     object: str = "model"
     created: int = Field(default_factory=lambda: int(time.time()))
-    owned_by: str = "FastTTS"
+    owned_by: str = "FlashTTS"
 
 
 class ModelList(BaseModel):

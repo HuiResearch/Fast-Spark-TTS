@@ -9,7 +9,7 @@
 
 ```python
 import asyncio
-from fast_tts import AutoEngine
+from flashtts import AutoEngine
 
 # Assume checkpoints/YourModelDir corresponds to a Spark, Orpheus, or Mega model
 engine = AutoEngine(

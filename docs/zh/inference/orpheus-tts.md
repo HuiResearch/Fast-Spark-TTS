@@ -24,7 +24,7 @@
 ### 初始化引擎
 
 ```python
-from fast_tts import AsyncOrpheusEngine
+from flashtts import AsyncOrpheusEngine
 
 
 def prepare_engine():
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
 ## API 参考
 
-详见 [fast_tts/engine/orpheus_engine](../../../fast_tts/engine/orpheus_engine.py) 下各方法注释，主要类和方法：
+详见 [fast_tts/engine/orpheus_engine](../../../flashtts/engine/orpheus_engine.py) 下各方法注释，主要类和方法：
 
 | 类 / 方法                     | 描述                         |
 |----------------------------|----------------------------|

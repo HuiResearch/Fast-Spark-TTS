@@ -1,50 +1,53 @@
 <div align="center">
-  <img src="docs/zh/_img/icon.png" width="450"/>
+  <img src="docs/zh/_img/icon.png" width="450" alt="FlashTTS Logo"/>
 
-[📘Documentation](docs/zh/README.MD)
+[📘 Documentation](docs/zh/README.MD)
 
 [中文](README.MD) | [English](README_EN.MD)
 
 </div>
 
-______________________________________________________________________
+---
 
-## 介绍
+# FlashTTS
 
-> 基于SparkTTS、OrpheusTTS、MegaTTS3等模型，提供高质量中文语音合成与声音克隆服务。通过简单易用的Web界面，让您轻松创建自然逼真的人声，满足各种场景需求。
+> 基于 **SparkTTS、OrpheusTTS、MegaTTS&nbsp;3** 等先进模型，FlashTTS 提供高质量的中文语音合成与零样本声音克隆服务。借助简洁直观的
+> Web 界面，您可以快速生成自然逼真的人声，满足配音、阅读、无障碍、虚拟角色等多元场景需求。
 
-> 如果项目对您有帮助，欢迎给项目点个star。
+> 如果 FlashTTS 对你有帮助，欢迎留下一个 ⭐ Star！
 
-## ✨ 特性
+## ✨ 功能亮点
 
-- 🚀 **多种后端加速**: 支持`vllm`、`sglang`、`llama cpp`、`mlx-lm` 多种加速策略
-- 🎯 **高并发**: 采用动态批处理，极大提高并发
-- 🎛️ **全参数控制**: 音调、语速、音色温度等全方位可调
-- 📱 **轻量部署**: 最小依赖，基于Flask和fastapi快速启动
-- 🎨 **简洁界面**: 标准的现代化UI
-- 🔊 **长文本语音合成**: 实现超长文本语音合成，并保持音色一致性。
-- 🔄 **支持流式语音合成**: 实现实时语音合成，边生成边播放，降低等待时间，提升交互体验
-- 🎭 **多角色语音合成**: 支持多角色语音合成，可应用于剧本对话合成。
+|     | 功能          | 说明                                                 |
+|-----|-------------|----------------------------------------------------|
+| 🚀  | **多后端推理加速** | 支持 `vllm`、`sglang`、`llama‑cpp`、`mlx‑lm` 等多种高性能推理引擎 |
+| 🎯  | **高并发**     | 动态批处理与异步队列，轻松应对大流量请求                               |
+| 🎛️ | **全参数控制**   | 可调节音调、语速、温度、情感标签等                                  |
+| 📱  | **轻量部署**    | 基于 FastAPI，一条命令即可启动；最小依赖                           |
+| 🔊  | **长文本合成**   | 支持超长文本，保持连续音色一致                                    |
+| 🔄  | **流式 TTS**  | 边生成边播放，降低等待，提高交互体验                                 |
+| 🎭  | **多角色对话**   | 同文本多角色合成，适合剧本配音                                    |
+| 🎨  | **现代化前端**   | 适配Web端                                             |
 
-## 🖼️ 前端展示
+## 🖼️ 前端示例
 
 https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 
-## 语音 Demos
+## 🔈 语音演示
 
-这里是`Spark-TTS`模型的克隆语音试听案例
+下列 Demo 展示了 FlashTTS 在不同模型与角色上的克隆效果。
 
----
+### SparkTTS 模型
 
 <table>
 <tr>
 <td align="center">
 
-**Donald Trump (en)**
+**Donald Trump en**
 </td>
 <td align="center">
 
-**Donald Trump (zh)**
+**Donald Trump zh**
 </td>
 </tr>
 
@@ -114,11 +117,7 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 </tr>
 </table>
 
----
-
-这里是`MegaTTS3`模型的克隆语音试听案例
-
----
+### MegaTTS&nbsp;3 模型
 
 <table>
 <tr>
@@ -146,11 +145,7 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 </tr>
 </table>
 
----
-
-这里是`OrpheusTTS zh`模型的合成语音试听案例
-
----
+### OrpheusTTS (zh) 模型
 
 <table>
 <tr>
@@ -178,63 +173,55 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 </tr>
 </table>
 
----
+## 快速使用
 
-## 推理速度
+建议在 **python 3.8 - 3.12** 环境中使用 pip 安装 `flashtts`：
 
-- 显卡：`A800`
-- 模型：`Spark-TTS-0.5B`
-- 测试使用参数和评测方式可参考[speed_test.py](examples/speed_test.py)
-- 输出音频长度(audio len)、推理耗时(cost time)单位都为秒。
-- 评测包括长文本和短文本场景。
-- 官方代码未评测，如有需求，可自行评测。
+```bash
+pip install flashtts
+```
 
-| 场景  |  engine   | device | audio len | cost time |  RTF  |
-|:---:|:---------:|:------:|:---------:|:---------:|:-----:|
-| 短文本 | llama-cpp |  cpu   |   7.48    |   6.808   | 0.910 |
-| 短文本 |   torch   |  gpu   |   7.18    |   7.675   | 1.069 |
-| 短文本 |   vllm    |  gpu   |   7.24    |   1.664   | 0.230 |
-| 短文本 |  sglang   |  gpu   |   7.58    |   1.073   | 0.142 |
-| 长文本 | llama-cpp |  cpu   |  121.98   |  117.828  | 0.966 |
-| 长文本 |   torch   |  gpu   |   113.7   |  107.167  | 0.943 |
-| 长文本 |   vllm    |  gpu   |  111.82   |   7.282   | 0.065 |
-| 长文本 |  sglang   |  gpu   |  117.02   |   4.197   | 0.036 |
+详细安装步骤，请参考：[installation.md](docs/zh/get_started/installation.md)
 
-## 提示
+## ⚡ 推理速度
 
-1. `SparkTTS`模型权重量化为`float16`无法使用，`torch_dtype`请设置为`bfloat16`或`float32`。
-2. 如果出现长空白音，可尝试调整`repetition_penalty`参数，大于`1.0`会降低重复token生成的概率，可避免长时间静音`token`生成(
-   SparkTTS的静音token id为`163406`)。
-3. `OrpheusTTS`支持emotion tag，直接在文本中添加`<tag>`
-   即可实现。每个模型支持的tag标签请参考：[orpheus_engine.py](fast_tts/engine/orpheus_engine.py) 中 LANG_MAP
-4. 出于安全考虑，`MegaTTS3`
-   团队未上传WaveVAE编码器参数。因此，只能从此处链接下载参考音频进行推理：[参考音频](https://drive.google.com/drive/folders/1QhcHWcy20JfqWjgqZX1YM3I6i9u4oNlr)
-   。如果需要使用自己的音频，请参考MegaTTS3项目的说明：[MegaTTS3](https://github.com/bytedance/MegaTTS3/tree/main?tab=readme-ov-file#inference)
+测试环境：`A800 GPU` · 模型：`Spark-TTS‑0.5B` · 测试脚本：[speed_test.py](examples/speed_test.py)
 
-## Acknowledgement
+| 场景  |    引擎     | 设备  | 音频长度 (s) | 推理耗时 (s) | RTF  |
+|:---:|:---------:|:---:|:--------:|:--------:|:----:|
+| 短文本 | llama‑cpp | CPU |   7.48   |   6.81   | 0.91 |
+| 短文本 |   torch   | GPU |   7.18   |   7.68   | 1.07 |
+| 短文本 |   vllm    | GPU |   7.24   |   1.66   | 0.23 |
+| 短文本 |  sglang   | GPU |   7.58   |   1.07   | 0.14 |
+| 长文本 | llama‑cpp | CPU |  121.98  |  117.83  | 0.97 |
+| 长文本 |   torch   | GPU |  113.70  |  107.17  | 0.94 |
+| 长文本 |   vllm    | GPU |  111.82  |   7.28   | 0.07 |
+| 长文本 |  sglang   | GPU |  117.02  |   4.20   | 0.04 |
 
-1. [Spark-TTS](https://github.com/SparkAudio/Spark-TTS)
-2. [Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)
-3. [MegaTTS3](https://github.com/bytedance/MegaTTS3)
+> **RTF < 1** 表示实时合成。
+
+## ⚙️ 使用提示
+
+1. **SparkTTS** 权重需使用 `bfloat16` 或 `float32`；`float16` 会报错。
+2. 若遇到长时间空白音，可将 `repetition_penalty` 调高 (> 1.0)。
+3. **OrpheusTTS** 支持在文本中插入 `<tag>` 控制情感，标签见 [`orpheus_engine.py`](flashtts/engine/orpheus_engine.py) 中
+   `LANG_MAP`。
+4. 出于安全考虑，**MegaTTS&nbsp;3** 未公开 WaveVAE
+   编码器，请参考官方说明下载：[参考音频](https://drive.google.com/drive/folders/1QhcHWcy20JfqWjgqZX1YM3I6i9u4oNlr)。
+
+## 🤝 鸣谢
+
+- [Spark‑TTS](https://github.com/SparkAudio/Spark-TTS)
+- [Orpheus‑TTS](https://github.com/canopyai/Orpheus-TTS)
+- [MegaTTS&nbsp;3](https://github.com/bytedance/MegaTTS3)
 
 ## ⚠️ 免责声明
 
-该项目提供了零样本语音克隆 TTS 模型，旨在用于学术研究、教育目的和合法应用，例如个性化语音合成、辅助技术和语言研究。
+FlashTTS 仅供学术研究、教育与合法用途，如无障碍辅助、个性化语音合成等。请勿将其用于欺诈、冒充、深度伪造等违法场景。违者自行承担法律与道德责任。
 
-请注意：
+## License
 
-- 请勿将此模型用于未经授权的语音克隆、冒充、欺诈、诈骗、深度伪造或任何非法活动。
-
-- 确保使用此模型时遵守当地的法律法规并遵守道德标准。
-
-- 开发人员对于此模型的任何误用不承担任何责任。
-
-本项目提倡负责任地开发和使用人工智能，并鼓励社区在人工智能研究和应用中坚持安全和道德原则。
-
-## 许可协议与致谢
-
-本项目基于 [Spark-TTS](https://github.com/SparkAudio/Spark-TTS) 构建，并采用与 SparkTTS
-相同的开源许可协议进行分发。详情请参阅原始 [SparkTTS 许可协议](https://github.com/SparkAudio/Spark-TTS/blob/main/LICENSE)。
+本项目沿用 Spark‑TTS 的协议，详情参见 [LICENSE](https://github.com/SparkAudio/Spark-TTS/blob/main/LICENSE)。
 
 ## Star History
 

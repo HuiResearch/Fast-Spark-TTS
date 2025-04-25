@@ -1,6 +1,6 @@
-## Fast-TTS 安装文档
+## Flash-TTS 安装文档
 
-> 本文档详细介绍 Fast-TTS 推理引擎的安装与部署流程，覆盖环境要求、模型权重下载、依赖安装。
+> 本文档详细介绍 Flash-TTS 推理引擎的安装与部署流程，覆盖环境要求、模型权重下载、依赖安装。
 
 ---
 
@@ -38,15 +38,10 @@
 pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
 ```
 
-#### 2. 安装其余依赖
+#### 2. 安装`flashtts`
 
 ```bash
-# 克隆仓库并进入目录
-git clone https://github.com/HuiResearch/Fast-Spark-TTS.git
-cd Fast-Spark-TTS
-
-# 安装核心依赖
-pip install -r requirements.txt
+pip install flashtts
 ```
 
 如果windows环境遇到安装`WeTextProcessing`出错，需要vs c++编译器时，可以使用`conda`先安装`pynini==2.1.6`:

@@ -1,6 +1,6 @@
-# Fast-TTS Python Client Usage Guide
+# Flash-TTS Python Client Usage Guide
 
-This document provides complete examples for using the Fast-TTS service in Python, including character-based synthesis,
+This document provides complete examples for using the Flash-TTS service in Python, including character-based synthesis,
 voice cloning (via base64 and file), streaming cloning, and OpenAI SDK-compatible interface.
 
 ---

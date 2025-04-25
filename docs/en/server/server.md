@@ -1,4 +1,4 @@
-## Fast-TTS Backend Deployment and API Usage Guide
+## Flash-TTS Backend Deployment and API Usage Guide
 
 ### 1. Installation & Startup
 
@@ -6,7 +6,7 @@
 2. Start the server:
 
    ```bash
-   python server.py \
+   flashtts serve \
    --model_path Spark-TTS-0.5B \ # Change to your model path if needed
    --backend vllm \ # Choose from: vllm, sglang, torch, llama-cpp, mlx-lm
    --llm_device cuda \

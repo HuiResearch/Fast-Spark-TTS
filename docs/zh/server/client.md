@@ -1,6 +1,6 @@
-# Fast-TTS Python 客户端使用指南
+# Flash-TTS Python 客户端使用指南
 
-本文档提供在 Python 中调用 Fast-TTS 服务的完整示例，包括角色合成、语音克隆（base64 和文件方式）、流式克隆和 OpenAI SDK 兼容接口。
+本文档提供在 Python 中调用 Flash-TTS 服务的完整示例，包括角色合成、语音克隆（base64 和文件方式）、流式克隆和 OpenAI SDK 兼容接口。
 
 ---
 

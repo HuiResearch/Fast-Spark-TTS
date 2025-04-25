@@ -24,7 +24,7 @@ The following examples are based on the `AsyncOrpheusEngine` interface:
 ### Initialize the Engine
 
 ```python
-from fast_tts import AsyncOrpheusEngine
+from flashtts import AsyncOrpheusEngine
 
 
 def prepare_engine():
@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
 ## API Reference
 
-See method docstrings in [fast_tts/engine/orpheus_engine](../../../fast_tts/engine/orpheus_engine.py). Main classes and
+See method docstrings in [fast_tts/engine/orpheus_engine](../../../flashtts/engine/orpheus_engine.py). Main classes and
 methods:
 
 | Class / Method             | Description                                      |

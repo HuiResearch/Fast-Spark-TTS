@@ -6,7 +6,7 @@ import asyncio
 from typing import Literal
 
 import numpy as np
-from fast_tts import AutoEngine, SparkAcousticTokens
+from flashtts import AutoEngine, SparkAcousticTokens
 
 short_text = "手握日月摘星辰，世间无我这般人。"
 long_text = ("今日是二零二五年三月十九日，国内外热点事件聚焦于国际局势、经济政策及社会民生领域。"

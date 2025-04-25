@@ -1,6 +1,6 @@
 # Project Documentation Overview
 
-Welcome to the `FastTTS` documentation. This project is divided into three main sections: **Getting
+Welcome to the `FlashTTS` documentation. This project is divided into three main sections: **Getting
 Started (`get_started`)**, **Model Inference (`inference`)**, and **Server Deployment (`server`)**.
 
 ---

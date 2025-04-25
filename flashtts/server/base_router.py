@@ -2,6 +2,7 @@
 # Project : Fast-Spark-TTS
 # Time    : 2025/4/7 16:14
 # Author  : Hui Huang
+from pathlib import Path
 from typing import Optional, Annotated, Literal
 from fastapi import HTTPException, Request, APIRouter, UploadFile, File, Form, Depends
 from fastapi.responses import StreamingResponse, JSONResponse, Response, FileResponse
@@ -18,19 +19,23 @@ from ..logger import get_logger
 logger = get_logger()
 
 base_router = APIRouter(
-    tags=["Fast-TTS"],
+    tags=["Flash-TTS"],
     responses={404: {"description": "Not found"}},
 )
+
+TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 
 @base_router.get("/")
 async def get_web():
-    return FileResponse("templates/index.html")
+    html_path = TEMPLATES_DIR / "index.html"
+    return FileResponse(str(html_path))
 
 
 @base_router.get("/favicon.ico", include_in_schema=False)
 async def favicon():
-    return FileResponse("templates/favicon.ico")
+    favicon_path = TEMPLATES_DIR / "favicon.ico"
+    return FileResponse(str(favicon_path))
 
 
 @base_router.post("/add_speaker")

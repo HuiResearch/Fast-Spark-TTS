@@ -1,6 +1,6 @@
 # 项目文档总览
 
-欢迎使用`FastTTS`文档。本项目分为三个主要部分：**快速上手（get_started）**、**模型推理（inference）** 和 **服务器部署（server）**。
+欢迎使用`FlashTTS`文档。本项目分为三个主要部分：**快速上手（get_started）**、**模型推理（inference）** 和 **服务器部署（server）**。
 
 ---
 

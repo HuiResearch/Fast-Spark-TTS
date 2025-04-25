@@ -8,7 +8,7 @@
 
 ```python
 import asyncio
-from fast_tts import AutoEngine
+from flashtts import AutoEngine
 
 # 假设 checkpoints/YourModelDir 为 Spark、Orpheus 或 Mega 对应的模型目录
 engine = AutoEngine(

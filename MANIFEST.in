@@ -1,0 +1,3 @@
+include README.MD
+include requirements.txt
+recursive-include flashtts/server/templates *.html *.ico

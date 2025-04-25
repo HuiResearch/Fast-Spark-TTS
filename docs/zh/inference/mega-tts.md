@@ -22,7 +22,7 @@
 ### 初始化引擎
 
 ```python
-from fast_tts import AsyncMega3Engine
+from flashtts import AsyncMega3Engine
 
 engine = AsyncMega3Engine(
     model_path="checkpoints/MegaTTS3",
@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
 ## API 参考
 
-详见 [fast_tts/engine/mega_engine](../../../fast_tts/engine/mega_engine.py) 下各方法注释，主要类和方法：
+详见 [fast_tts/engine/mega_engine](../../../flashtts/engine/mega_engine.py) 下各方法注释，主要类和方法：
 
 | 类 / 方法              | 描述                                    |
 |---------------------|---------------------------------------|

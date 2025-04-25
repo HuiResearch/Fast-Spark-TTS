@@ -22,7 +22,7 @@ All examples below use the `AsyncMega3Engine` interface:
 ### Initialize the Engine
 
 ```python
-from fast_tts import AsyncMega3Engine
+from flashtts import AsyncMega3Engine
 
 engine = AsyncMega3Engine(
     model_path="checkpoints/MegaTTS3",
@@ -120,7 +120,7 @@ if __name__ == '__main__':
 ## API Reference
 
 Refer to inline comments in  
-[`fast_tts/engine/mega_engine.py`](../../../fast_tts/engine/mega_engine.py) for full documentation.  
+[`fast_tts/engine/mega_engine.py`](../../../flashtts/engine/mega_engine.py) for full documentation.  
 Key classes and methods:
 
 | Class / Method      | Description                                                          |

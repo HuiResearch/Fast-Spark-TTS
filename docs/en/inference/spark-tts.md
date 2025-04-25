@@ -26,7 +26,7 @@ The following examples are based on the `AsyncSparkEngine` interface:
 ### Initialize Engine
 
 ```python
-from fast_tts import AsyncSparkEngine
+from flashtts import AsyncSparkEngine
 
 engine = AsyncSparkEngine(
     model_path="checkpoints/Spark-TTS-0.5B",
@@ -143,7 +143,7 @@ if __name__ == '__main__':
    ```
 2. Reuse saved tokens:
    ```python
-   from fast_tts import SparkAcousticTokens
+   from flashtts import SparkAcousticTokens
    tokens = SparkAcousticTokens.load("acoustic_tokens.txt")
    wav2 = asyncio.run(
        engine.speak_async(..., acoustic_tokens=tokens)
@@ -166,7 +166,7 @@ engine.write_audio(audio, "stream.wav")
 
 ## API Reference
 
-See method annotations in [fast_tts/engine/spark_engine](../../../fast_tts/engine/spark_engine.py).  
+See method annotations in [fast_tts/engine/spark_engine](../../../flashtts/engine/spark_engine.py).  
 Key classes and methods:
 
 | Class / Method             | Description                               |

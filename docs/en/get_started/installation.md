@@ -1,6 +1,6 @@
-## Fast-TTS Installation Guide
+## Flash-TTS Installation Guide
 
-> This document provides a detailed walkthrough for installing and deploying the Fast-TTS inference engine, including
+> This document provides a detailed walkthrough for installing and deploying the Flash-TTS inference engine, including
 > environment requirements, model weight downloads, and dependency installation.
 
 ---
@@ -39,15 +39,10 @@ For example, with CUDA 12.4:
 pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
 ```
 
-#### 2. Install Core Dependencies
+#### 2. Install `flashtts`
 
 ```bash
-# Clone the repository and navigate to the directory
-git clone https://github.com/HuiResearch/Fast-Spark-TTS.git
-cd Fast-Spark-TTS
-
-# Install core dependencies
-pip install -r requirements.txt
+pip install flashtts
 ```
 
 If you encounter an error installing `WeTextProcessing` in a Windows environment due to the need for a VS C++ compiler, you can first install `pynini==2.1.6` using `conda`:

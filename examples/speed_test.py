@@ -6,7 +6,7 @@ from typing import Literal
 
 import torch
 
-from fast_tts import AsyncSparkEngine
+from flashtts import AsyncSparkEngine
 import asyncio
 import time
 
