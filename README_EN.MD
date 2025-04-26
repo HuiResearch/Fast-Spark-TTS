@@ -11,22 +11,24 @@
 
 # FlashTTS
 
-> Powered by state-of-the-art models such as **SparkTTS, OrpheusTTS, MegaTTS 3**, FlashTTS delivers high-quality Mandarin speech synthesis and zero-shot voice cloning. With a clean and intuitive Web interface, you can quickly generate natural, lifelike voices for dubbing, narration, accessibility, virtual characters, and more.
+> Powered by state-of-the-art models such as **SparkTTS, OrpheusTTS, MegaTTS 3**, FlashTTS delivers high-quality
+> Mandarin speech synthesis and zero-shot voice cloning. With a clean and intuitive Web interface, you can quickly
+> generate natural, lifelike voices for dubbing, narration, accessibility, virtual characters, and more.
 
 > If you find FlashTTS helpful, please leave us a ⭐ Star!
 
 ## ✨ Highlights
 
-|     | Feature                   | Description                                                                 |
-|-----|---------------------------|-----------------------------------------------------------------------------|
+|     | Feature                        | Description                                                                                    |
+|-----|--------------------------------|------------------------------------------------------------------------------------------------|
 | 🚀  | **Multi-backend Acceleration** | Supports high-performance inference engines like `vllm`, `sglang`, `llama-cpp`, `mlx-lm`, etc. |
-| 🎯  | **High Concurrency**       | Dynamic batching and asynchronous queues to handle heavy traffic with ease   |
-| 🎛️ | **Full Parameter Control** | Adjust pitch, speaking rate, temperature, emotion tags, and more             |
-| 📱  | **Lightweight Deployment** | Built on FastAPI—start with a single command; minimal dependencies          |
-| 🔊  | **Long-form Synthesis**    | Supports very long texts while maintaining consistent voice quality         |
-| 🔄  | **Streaming TTS**          | Generate and play audio in real time; reduces wait time, enhances interactivity |
-| 🎭  | **Multi-character Dialog** | Synthesize multiple roles within the same text—ideal for script dubbing      |
-| 🎨  | **Modern Frontend**        | Web-ready, responsive interface                                             |
+| 🎯  | **High Concurrency**           | Dynamic batching and asynchronous queues to handle heavy traffic with ease                     |
+| 🎛️ | **Full Parameter Control**     | Adjust pitch, speaking rate, temperature, emotion tags, and more                               |
+| 📱  | **Lightweight Deployment**     | Built on FastAPI—start with a single command; minimal dependencies                             |
+| 🔊  | **Long-form Synthesis**        | Supports very long texts while maintaining consistent voice quality                            |
+| 🔄  | **Streaming TTS**              | Generate and play audio in real time; reduces wait time, enhances interactivity                |
+| 🎭  | **Multi-character Dialog**     | Synthesize multiple roles within the same text—ideal for script dubbing                        |
+| 🎨  | **Modern Frontend**            | Web-ready, responsive interface                                                                |
 
 ## 🖼️ Frontend Demo
 
@@ -146,39 +148,44 @@ For detailed usage，please refer to: [quick_start.md](docs/en/get_started/quick
 
 Test environment: `A800 GPU` · Model: `Spark-TTS-0.5B` · Test script: [speed_test.py](examples/speed_test.py)
 
-| Scenario | Engine      | Device | Audio Length (s) | Inference Time (s) | RTF  |
-|:--------:|:-----------:|:------:|:----------------:|:------------------:|:----:|
-| Short    | llama-cpp   | CPU    | 7.48             | 6.81               | 0.91 |
-| Short    | torch       | GPU    | 7.18             | 7.68               | 1.07 |
-| Short    | vllm        | GPU    | 7.24             | 1.66               | 0.23 |
-| Short    | sglang      | GPU    | 7.58             | 1.07               | 0.14 |
-| Long     | llama-cpp   | CPU    | 121.98           | 117.83             | 0.97 |
-| Long     | torch       | GPU    | 113.70           | 107.17             | 0.94 |
-| Long     | vllm        | GPU    | 111.82           | 7.28               | 0.07 |
-| Long     | sglang      | GPU    | 117.02           | 4.20               | 0.04 |
+| Scenario |  Engine   | Device | Audio Length (s) | Inference Time (s) | RTF  |
+|:--------:|:---------:|:------:|:----------------:|:------------------:|:----:|
+|  Short   | llama-cpp |  CPU   |       7.48       |        6.81        | 0.91 |
+|  Short   |   torch   |  GPU   |       7.18       |        7.68        | 1.07 |
+|  Short   |   vllm    |  GPU   |       7.24       |        1.66        | 0.23 |
+|  Short   |  sglang   |  GPU   |       7.58       |        1.07        | 0.14 |
+|   Long   | llama-cpp |  CPU   |      121.98      |       117.83       | 0.97 |
+|   Long   |   torch   |  GPU   |      113.70      |       107.17       | 0.94 |
+|   Long   |   vllm    |  GPU   |      111.82      |        7.28        | 0.07 |
+|   Long   |  sglang   |  GPU   |      117.02      |        4.20        | 0.04 |
 
 > **RTF < 1** means real-time synthesis.
 
 ## ⚙️ Usage Tips
 
-1. **SparkTTS** weights must be `bfloat16` or `float32`; using `float16` will cause errors.  
-2. If you experience long silent gaps, try increasing `repetition_penalty` (> 1.0).  
-3. **OrpheusTTS** supports inserting `<tag>` in text to control emotion. See `LANG_MAP` in [`orpheus_engine.py`](flashtts/engine/orpheus_engine.py).  
-4. For safety reasons, **MegaTTS 3** does not publish the WaveVAE encoder. Please follow the official instructions to download it: [reference audio](https://drive.google.com/drive/folders/1QhcHWcy20JfqWjgqZX1YM3I6i9u4oNlr).
+1. **SparkTTS** weights must be `bfloat16` or `float32`; using `float16` will cause errors.
+2. If you experience long silent gaps, try increasing `repetition_penalty` (> 1.0).
+3. **OrpheusTTS** supports inserting `<tag>` in text to control emotion. See `LANG_MAP` in [
+   `orpheus_engine.py`](flashtts/engine/orpheus_engine.py).
+4. For safety reasons, **MegaTTS 3** does not publish the WaveVAE encoder. Please follow the official instructions to
+   download it: [reference audio](https://drive.google.com/drive/folders/1QhcHWcy20JfqWjgqZX1YM3I6i9u4oNlr).
 
 ## 🤝 Acknowledgments
 
-- [Spark-TTS](https://github.com/SparkAudio/Spark-TTS)  
-- [Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)  
-- [MegaTTS 3](https://github.com/bytedance/MegaTTS3)  
+- [Spark-TTS](https://github.com/SparkAudio/Spark-TTS)
+- [Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)
+- [MegaTTS 3](https://github.com/bytedance/MegaTTS3)
 
 ## ⚠️ Disclaimer
 
-FlashTTS is provided for academic research, education, and lawful purposes only, such as accessibility assistance and personalized speech synthesis. Do **not** use it for fraud, impersonation, deepfakes, or other illegal activities. Users are responsible for any misuse.
+FlashTTS is provided for academic research, education, and lawful purposes only, such as accessibility assistance and
+personalized speech synthesis. Do **not** use it for fraud, impersonation, deepfakes, or other illegal activities. Users
+are responsible for any misuse.
 
 ## License
 
-This project follows the same license as Spark-TTS. See [LICENSE](https://github.com/SparkAudio/Spark-TTS/blob/main/LICENSE) for details.
+This project follows the same license as Spark-TTS.
+See [LICENSE](https://github.com/SparkAudio/Spark-TTS/blob/main/LICENSE) for details.
 
 ## Star History
 

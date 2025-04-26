@@ -9,7 +9,8 @@ Started (`get_started`)**, **Model Inference (`inference`)**, and **Server Deplo
 
 ```
 ├── get_started
-│   └── installation.md      # Installation Guide
+│   ├── installation.md      # Installation Guide
+│   └── quick_start.md       # Quick Start Guide
 ├── inference
 │   ├── auto-engine.md       # Auto Inference Engine Guide
 │   ├── mega-tts.md          # Mega TTS Model Documentation
@@ -24,6 +25,7 @@ Started (`get_started`)**, **Model Inference (`inference`)**, and **Server Deplo
 
 - [Installation Guide](get_started/installation.md): Learn how to install project dependencies, perform basic setup, and
   get started quickly.
+- [Quick Start Guide](get_started/quick_start.md): A quick-start guide to using command-line tools to perform speech synthesis
 
 ## 🧠 Inference Engines and Models
 
