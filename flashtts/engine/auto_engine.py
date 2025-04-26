@@ -120,6 +120,8 @@ class AutoEngine(Engine):
         self._engine = engine_cls(**engine_kwargs)
         self.SAMPLE_RATE = self._engine.SAMPLE_RATE
         self.engine_name = engine_name
+        self._SUPPORT_CLONE = self._engine._SUPPORT_CLONE
+        self._SUPPORT_SPEAK = self._engine._SUPPORT_SPEAK
 
     @classmethod
     def _auto_detect_engine(cls, model_path: str, snac_path: Optional[str] = None):
@@ -140,6 +142,8 @@ class AutoEngine(Engine):
         return self._engine.list_roles()
 
     async def add_speaker(self, name: str, audio, reference_text: Optional[str] = None):
+        if not self._SUPPORT_CLONE:
+            raise RuntimeError("The engine does not support adding custom roles")
         await self._engine.add_speaker(name, audio, reference_text=reference_text)
 
     async def delete_speaker(self, name: str):
@@ -160,6 +164,8 @@ class AutoEngine(Engine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> np.ndarray:
+        if not self._SUPPORT_SPEAK:
+            raise RuntimeError("Engine does not support speak")
         parameters = dict(
             name=name,
             text=text,
@@ -200,6 +206,8 @@ class AutoEngine(Engine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> AsyncIterator[np.ndarray]:
+        if not self._SUPPORT_SPEAK:
+            raise RuntimeError("Engine does not support speak")
         parameters = dict(
             name=name,
             text=text,
@@ -251,6 +259,8 @@ class AutoEngine(Engine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> np.ndarray:
+        if not self._SUPPORT_CLONE:
+            raise RuntimeError("Engine does not support clone")
         parameters = dict(
             text=text,
             reference_audio=reference_audio,
@@ -293,6 +303,8 @@ class AutoEngine(Engine):
             window_size: int = 50,
             split_fn: Optional[Callable[[str], list[str]]] = None,
             **kwargs) -> AsyncIterator[np.ndarray]:
+        if not self._SUPPORT_CLONE:
+            raise RuntimeError("Engine does not support clone")
         parameters = dict(
             text=text,
             reference_audio=reference_audio,

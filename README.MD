@@ -173,7 +173,7 @@ https://github.com/user-attachments/assets/1bd9d586-fac7-4016-b955-5a58d8fb9d7e
 </tr>
 </table>
 
-## 快速使用
+## 快速开始
 
 建议在 **python 3.8 - 3.12** 环境中使用 pip 安装 `flashtts`：
 
@@ -182,6 +182,17 @@ pip install flashtts
 ```
 
 详细安装步骤，请参考：[installation.md](docs/zh/get_started/installation.md)
+
+```bash
+flashtts infer \
+  -i "你好，欢迎使用语音合成。" \
+  -o output.wav \
+  -m ./models/your_model \
+  -b vllm \
+  [其他可选参数]
+```
+
+详细使用说明，请参考：[quick_start.md](docs/zh/get_started/quick_start.md)
 
 ## ⚡ 推理速度
 

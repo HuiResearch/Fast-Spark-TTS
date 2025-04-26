@@ -20,6 +20,8 @@ logger = get_logger()
 
 
 class Engine(ABC):
+    _SUPPORT_CLONE = False
+    _SUPPORT_SPEAK = False
 
     @abstractmethod
     def list_roles(self) -> list[str]:

@@ -20,6 +20,8 @@ logger = get_logger()
 
 class AsyncMega3Engine(BaseEngine):
     SAMPLE_RATE = 24000
+    _SUPPORT_CLONE = True
+    _SUPPORT_SPEAK = True
 
     def __init__(
             self,

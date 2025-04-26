@@ -41,9 +41,17 @@ pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.
 
 #### 2. Install `flashtts`
 
-```bash
-pip install flashtts
-```
+- **pip**：
+  ```bash
+  pip install flashtts
+  ```
+  
+- **source code**：
+  ```bash
+  git clone https://github.com/HuiResearch/FlashTTS.git
+  cd FlashTTS
+  pip install .
+  ```
 
 If you encounter an error installing `WeTextProcessing` in a Windows environment due to the need for a VS C++ compiler, you can first install `pynini==2.1.6` using `conda`:
 

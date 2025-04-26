@@ -17,6 +17,7 @@ from flashtts.commands import BaseCLICommand
 from flashtts.logger import get_logger
 from flashtts.server.base_router import base_router
 from flashtts.server.openai_router import openai_router
+from flashtts.commands.utils import add_model_parser
 
 logger = get_logger()
 
@@ -164,51 +165,12 @@ class ServerCommand(BaseCLICommand):
     def register_subcommand(parser: ArgumentParser):
         serve_parser = parser.add_parser("serve", help="CLI tool to serve.")
 
-        serve_parser.add_argument("--model_path", type=str, required=True,
-                                  help="Path to the TTS model")
-
-        serve_parser.add_argument("--backend", type=str, required=True,
-                                  choices=["llama-cpp", "vllm", "sglang", "torch", "mlx-lm"],
-                                  help="Backend type, e.g., llama-cpp, vllm, sglang, mlx-lm, or torch")
-        serve_parser.add_argument(
-            "--lang", type=str, default=None,
-            help="Language type for Orpheus TTS model, e.g., mandarin, french, german, korean, hindi, spanish, italian, spanish_italian, english")
-        serve_parser.add_argument("--snac_path", type=str, default=None,
-                                  help="Path to the SNAC module for OrpheusTTS")
-        serve_parser.add_argument("--llm_device", type=str, default="auto",
-                                  help="Device for the LLM, e.g., cpu or cuda")
-        serve_parser.add_argument("--tokenizer_device", type=str, default="auto",
-                                  help="Device for the audio tokenizer")
-        serve_parser.add_argument("--detokenizer_device", type=str, default="auto",
-                                  help="Device for the audio detokenizer")
-        serve_parser.add_argument("--wav2vec_attn_implementation", type=str, default="eager",
-                                  choices=["sdpa", "flash_attention_2", "eager"],
-                                  help="Attention implementation method for wav2vec")
-        serve_parser.add_argument("--llm_attn_implementation", type=str, default="eager",
-                                  choices=["sdpa", "flash_attention_2", "eager"],
-                                  help="Attention implementation method for the torch generator")
-        serve_parser.add_argument("--max_length", type=int, default=32768,
-                                  help="Maximum generation length")
-        serve_parser.add_argument("--llm_gpu_memory_utilization", type=float, default=0.6,
-                                  help="GPU memory utilization ratio for vllm and sglang backends")
-        serve_parser.add_argument("--torch_dtype", type=str, default="auto",
-                                  choices=['float16', "bfloat16", 'float32', 'auto'],
-                                  help="Data type used by the LLM in torch generator")
-        serve_parser.add_argument(
-            "--cache_implementation", type=str, default=None,
-            help='Name of the cache class used in "generate" for faster decoding. Options: static, offloaded_static, sliding_window, hybrid, mamba, quantized.'
-        )
+        add_model_parser(serve_parser)
         serve_parser.add_argument("--role_dir", type=str, default=None,
                                   help="Directory containing predefined speaker roles")
         serve_parser.add_argument("--api_key", type=str, default=None,
                                   help="API key for request authentication")
-        serve_parser.add_argument("--seed", type=int, default=0, help="Random seed")
-        serve_parser.add_argument("--batch_size", type=int, default=1,
-                                  help="Max number of audio requests processed in a single batch")
-        serve_parser.add_argument("--llm_batch_size", type=int, default=256,
-                                  help="Max number of LLM requests processed in a single batch")
-        serve_parser.add_argument("--wait_timeout", type=float, default=0.01,
-                                  help="Timeout for dynamic batching (in seconds)")
+
         serve_parser.add_argument("--host", type=str, default="0.0.0.0",
                                   help="Host address for the server")
         serve_parser.add_argument("--port", type=int, default=8000,

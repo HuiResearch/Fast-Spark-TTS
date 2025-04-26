@@ -210,6 +210,8 @@ def process_prompt_control(
 
 class AsyncSparkEngine(BaseEngine):
     SAMPLE_RATE = 16000
+    _SUPPORT_CLONE = True
+    _SUPPORT_SPEAK = True
 
     def __init__(
             self,

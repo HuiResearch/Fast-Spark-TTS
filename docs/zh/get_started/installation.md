@@ -40,15 +40,29 @@ pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.
 
 #### 2. 安装`flashtts`
 
-```bash
-pip install flashtts
-```
+- **pip**安装方式：
+  ```bash
+  pip install flashtts
+  ```
+  
+- **源码安装**：
+  ```bash
+  git clone https://github.com/HuiResearch/FlashTTS.git
+  cd FlashTTS
+  pip install .
+  ```
 
 如果windows环境遇到安装`WeTextProcessing`出错，需要vs c++编译器时，可以使用`conda`先安装`pynini==2.1.6`:
 
 ```bash
 conda install -c conda-forge pynini==2.1.6
 pip install WeTextProcessing==1.0.4.1
+```
+
+#### 3. 从源码安装`flashtts`
+
+```bash
+pip install flashtts
 ```
 
 #### 3. 推理后端安装（按需选择一项）

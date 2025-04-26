@@ -62,6 +62,8 @@ LANG_MAP = {
 
 class AsyncOrpheusEngine(BaseEngine):
     SAMPLE_RATE = 24000
+    _SUPPORT_SPEAK = True
+    _SUPPORT_CLONE = False
 
     def __init__(
             self,

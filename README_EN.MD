@@ -131,6 +131,17 @@ pip install flashtts
 
 For detailed installation steps, please refer to: [installation guide](docs/zh/get_started/installation.md)
 
+```bash
+flashtts infer \
+  -i "hello world." \
+  -o output.wav \
+  -m ./models/your_model \
+  -b vllm \
+  [other optional parameters]
+```
+
+For detailed usage，please refer to: [quick_start.md](docs/en/get_started/quick_start.md)
+
 ## ⚡ Inference Speed
 
 Test environment: `A800 GPU` · Model: `Spark-TTS-0.5B` · Test script: [speed_test.py](examples/speed_test.py)

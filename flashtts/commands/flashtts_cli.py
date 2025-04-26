@@ -5,6 +5,7 @@
 from argparse import ArgumentParser
 
 from flashtts.commands.serve import ServerCommand
+from flashtts.commands.infer import InferCommand
 
 
 def main():
@@ -17,6 +18,7 @@ def main():
 
     # Register commands
     ServerCommand.register_subcommand(commands_parser)
+    InferCommand.register_subcommand(commands_parser)
 
     # Let's go
     args = parser.parse_args()
