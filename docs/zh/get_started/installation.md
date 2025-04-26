@@ -59,12 +59,6 @@ conda install -c conda-forge pynini==2.1.6
 pip install WeTextProcessing==1.0.4.1
 ```
 
-#### 3. 从源码安装`flashtts`
-
-```bash
-pip install flashtts
-```
-
 #### 3. 推理后端安装（按需选择一项）
 
 - **vLLM** (版本需 > 0.7.2)
