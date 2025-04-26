@@ -209,4 +209,4 @@ See [LICENSE](https://github.com/SparkAudio/Spark-TTS/blob/main/LICENSE) for det
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=FlashTTS/FlashTTS&type=Date)](https://www.star-history.com/#FlashTTS/FlashTTS&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=HuiResearch/FlashTTS&type=Date)](https://www.star-history.com/#HuiResearch/FlashTTS&Date)
