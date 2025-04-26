@@ -133,6 +133,7 @@ pip install flashtts
 
 For detailed installation steps, please refer to: [installation guide](docs/zh/get_started/installation.md)
 
+Local inference command:：
 ```bash
 flashtts infer \
   -i "hello world." \
@@ -143,6 +144,25 @@ flashtts infer \
 ```
 
 For detailed usage，please refer to: [quick_start.md](docs/en/get_started/quick_start.md)
+
+Server deployment:
+
+```bash
+ flashtts serve \
+ --model_path Spark-TTS-0.5B \ 
+ --backend vllm \ 
+ --role_dir data/roles 
+ --llm_device cuda \
+ --tokenizer_device cuda \
+ --detokenizer_device cuda \
+ --wav2vec_attn_implementation sdpa \
+ --llm_attn_implementation sdpa \ 
+ --torch_dtype "bfloat16" \ 
+ --max_length 32768 \
+ --llm_gpu_memory_utilization 0.6 \
+ --host 0.0.0.0 \
+ --port 8000
+ ```
 
 ## ⚡ Inference Speed
 

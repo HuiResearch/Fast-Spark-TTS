@@ -183,6 +183,7 @@ pip install flashtts
 
 详细安装步骤，请参考：[installation.md](docs/zh/get_started/installation.md)
 
+本地推理：
 ```bash
 flashtts infer \
   -i "你好，欢迎使用语音合成。" \
@@ -194,6 +195,24 @@ flashtts infer \
 
 详细使用说明，请参考：[quick_start.md](docs/zh/get_started/quick_start.md)
 
+部署方式：
+```bash
+ flashtts serve \
+ --model_path Spark-TTS-0.5B \ 
+ --backend vllm \ 
+ --role_dir data/roles 
+ --llm_device cuda \
+ --tokenizer_device cuda \
+ --detokenizer_device cuda \
+ --wav2vec_attn_implementation sdpa \
+ --llm_attn_implementation sdpa \ 
+ --torch_dtype "bfloat16" \ 
+ --max_length 32768 \
+ --llm_gpu_memory_utilization 0.6 \
+ --host 0.0.0.0 \
+ --port 8000
+ ```
+    
 ## ⚡ 推理速度
 
 测试环境：`A800 GPU` · 模型：`Spark-TTS‑0.5B` · 测试脚本：[speed_test.py](examples/speed_test.py)
