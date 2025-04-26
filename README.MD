@@ -200,7 +200,7 @@ flashtts infer \
  flashtts serve \
  --model_path Spark-TTS-0.5B \ 
  --backend vllm \ 
- --role_dir data/roles 
+ --role_dir data/roles \ 
  --llm_device cuda \
  --tokenizer_device cuda \
  --detokenizer_device cuda \
