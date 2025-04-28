@@ -6,6 +6,7 @@ from fastapi import HTTPException, Request, APIRouter
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from .protocol import OpenAISpeechRequest, ModelCard, ModelList
 from .utils.audio_writer import StreamingAudioWriter
+from .utils.utils import generate_audio
 from ..engine import AutoEngine
 from ..logger import get_logger
 
@@ -164,9 +165,8 @@ async def create_speech(
             audio_data = await engine.speak_async(
                 **api_inputs
             )
-            output = audio_writer.write_chunk(audio_data, finalize=False)
-            final = audio_writer.write_chunk(finalize=True)
-            output = output + final
+            output = generate_audio(audio_data, audio_writer)
+
             return Response(
                 content=output,
                 media_type=content_type,
@@ -188,3 +188,8 @@ async def create_speech(
                 "type": "server_error",
             },
         )
+    finally:
+        try:
+            audio_writer.close()
+        except:
+            pass

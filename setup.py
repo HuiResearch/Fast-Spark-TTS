@@ -24,7 +24,7 @@ def get_readme() -> str:
 
 setup(
     name='flashtts',
-    version='0.1.1',
+    version='0.1.2',
     description='A Fast TTS toolkit',
     long_description=get_readme(),
     long_description_content_type='text/markdown',

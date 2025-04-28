@@ -7,7 +7,7 @@ import io
 
 import httpx
 import numpy as np
-from fastapi import HTTPException, Request
+from fastapi import HTTPException
 
 from .audio_writer import StreamingAudioWriter
 from ...logger import get_logger
@@ -60,23 +60,46 @@ async def load_latent_file(latent_file):
     return latent_io
 
 
-async def generate_audio_stream(generator, data, writer: StreamingAudioWriter, raw_request: Request):
-    async for chunk in generator(**data):
-        # Check if client is still connected
-        is_disconnected = raw_request.is_disconnected
-        if callable(is_disconnected):
-            is_disconnected = await is_disconnected()
-        if is_disconnected:
-            logger.info("Client disconnected, stopping audio generation")
-            break
+async def generate_audio_stream(generator, data, writer: StreamingAudioWriter, raw_request):
+    try:
+        async for chunk in generator(**data):
+            # Check if client is still connected
+            if await raw_request.is_disconnected():
+                logger.info("Client disconnected, stopping audio generation")
+                break
 
-        audio = writer.write_chunk(chunk, finalize=False)
-        yield audio
-    yield writer.write_chunk(finalize=True)
+            audio = writer.write_chunk(chunk, finalize=False)
+            yield audio
+        yield writer.write_chunk(finalize=True)
+    except Exception as e:
+        try:
+            writer.close()
+        except:
+            pass
+        logger.error(f"An error occurred during the streaming audio generation: {str(e)}")
+        raise HTTPException(status_code=500,
+                            detail=f"An error occurred during the streaming audio generation: {str(e)}")
+    finally:
+        try:
+            writer.close()
+        except:
+            pass
 
 
-async def generate_audio(audio: np.ndarray, writer: StreamingAudioWriter):
-    output = writer.write_chunk(audio, finalize=False)
-    final = writer.write_chunk(finalize=True)
-    output = output + final
+def generate_audio(audio: np.ndarray, writer: StreamingAudioWriter):
+    try:
+        output = writer.write_chunk(audio, finalize=False)
+        final = writer.write_chunk(finalize=True)
+        output = output + final
+    except Exception as e:
+        try:
+            writer.close()
+        except:
+            pass
+        logger.error(f"An error occurred while writing the audio: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"An error occurred while writing the audio: {str(e)}")
+    try:
+        writer.close()
+    except:
+        pass
     return output

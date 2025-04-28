@@ -223,7 +223,7 @@ async def clone_voice(
             "Content-Disposition": f"attachment; filename=speech.{req.response_format}",
             "Cache-Control": "no-cache",  # Prevent caching
         }
-        audio_io = await generate_audio(audio, writer=audio_writer)
+        audio_io = generate_audio(audio, writer=audio_writer)
         return Response(
             audio_io,
             media_type=content_type,
@@ -311,7 +311,7 @@ async def speak(req: SpeakRequest, raw_request: Request):
             "Content-Disposition": f"attachment; filename=speech.{req.response_format}",
             "Cache-Control": "no-cache",  # Prevent caching
         }
-        audio_io = await generate_audio(audio, writer=audio_writer)
+        audio_io = generate_audio(audio, writer=audio_writer)
         return Response(
             audio_io,
             media_type=content_type,
@@ -379,7 +379,7 @@ async def multi_speak(req: MultiSpeakRequest, raw_request: Request):
             "Content-Disposition": f"attachment; filename=speech.{req.response_format}",
             "Cache-Control": "no-cache",  # Prevent caching
         }
-        audio_io = await generate_audio(audio, writer=audio_writer)
+        audio_io = generate_audio(audio, writer=audio_writer)
         return Response(
             audio_io,
             media_type=content_type,
