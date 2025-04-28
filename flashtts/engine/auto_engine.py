@@ -229,17 +229,7 @@ class AutoEngine(Engine):
                 }
             )
         async for chunk in self._engine.speak_stream_async(
-                name=name,
-                text=text,
-                temperature=temperature,
-                top_k=top_k,
-                top_p=top_p,
-                repetition_penalty=repetition_penalty,
-                max_tokens=max_tokens,
-                length_threshold=length_threshold,
-                window_size=window_size,
-                split_fn=split_fn,
-                **kwargs
+                **parameters
         ):
             yield chunk
 
