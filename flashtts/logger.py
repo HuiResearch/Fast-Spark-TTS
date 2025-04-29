@@ -7,7 +7,7 @@ import sys
 import threading
 from typing import Optional
 
-PROJECT_NAME = "Fast-Spark-TTS"
+PROJECT_NAME = "FlashTTS"
 log_levels = {
     "detail": logging.DEBUG,  # will also print filename and line number
     "debug": logging.DEBUG,

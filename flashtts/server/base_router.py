@@ -38,6 +38,20 @@ async def favicon():
     return FileResponse(str(favicon_path))
 
 
+@base_router.get("/server_info")
+async def audio_roles(raw_request: Request):
+    engine: AutoEngine = raw_request.app.state.engine
+    return JSONResponse(
+        content={
+            "success": True,
+            "info": {
+                "model": engine.engine_name,
+                "roles": engine.list_roles(),
+                "sample_rate": engine.SAMPLE_RATE,
+            }
+        })
+
+
 @base_router.post("/add_speaker")
 async def add_speaker(
         raw_request: Request,
