@@ -23,23 +23,28 @@ async def get_audio_bytes_from_url(url: str) -> bytes:
         return response.content
 
 
+async def load_base64_or_url(audio):
+    # 根据 reference_audio 内容判断读取方式
+    if audio.startswith("http://") or audio.startswith("https://"):
+        audio_bytes = await get_audio_bytes_from_url(audio)
+    else:
+        try:
+            audio_bytes = base64.b64decode(audio)
+        except Exception as e:
+            logger.warning("无效的 base64 音频数据: " + str(e))
+            raise HTTPException(status_code=400, detail="无效的 base64 音频数据: " + str(e))
+    # 利用 BytesIO 包装字节数据，然后使用 soundfile 读取为 numpy 数组
+    try:
+        bytes_io = io.BytesIO(audio_bytes)
+    except Exception as e:
+        logger.warning("读取参考音频失败: " + str(e))
+        raise HTTPException(status_code=400, detail="读取参考音频失败: " + str(e))
+    return bytes_io
+
+
 async def load_audio_bytes(audio_file, audio):
     if audio_file is None:
-        # 根据 reference_audio 内容判断读取方式
-        if audio.startswith("http://") or audio.startswith("https://"):
-            audio_bytes = await get_audio_bytes_from_url(audio)
-        else:
-            try:
-                audio_bytes = base64.b64decode(audio)
-            except Exception as e:
-                logger.warning("无效的 base64 音频数据: " + str(e))
-                raise HTTPException(status_code=400, detail="无效的 base64 音频数据: " + str(e))
-        # 利用 BytesIO 包装字节数据，然后使用 soundfile 读取为 numpy 数组
-        try:
-            bytes_io = io.BytesIO(audio_bytes)
-        except Exception as e:
-            logger.warning("读取参考音频失败: " + str(e))
-            raise HTTPException(status_code=400, detail="读取参考音频失败: " + str(e))
+        bytes_io = await load_base64_or_url(audio)
     else:
         content = await audio_file.read()
         if not content:

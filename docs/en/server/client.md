@@ -199,17 +199,50 @@ def clone_voice_stream():
 
 ### Sample Code
 
+Call a built-in audio character:
+
 ```python
 from openai import OpenAI
 
 
 def openai_speech():
-    client = OpenAI(base_url=f"{BASE_URL}/v1", api_key="YOUR_KEY")
+    client = OpenAI(
+        base_url=f"{BASE_URL}/v1",
+        api_key="not-needed"  # If an API key is set, please provide it
+    )
     with client.audio.speech.with_streaming_response.create(
-            model="orpheus", voice="tara", input="Hello"
-    ) as r:
-        r.stream_to_file("out.mp3")
-    print("Output saved: out.mp3")
+            model="spark",
+            voice="赞助商",  # Name of the built-in voice
+            input="Hello, I am the invincible little cutie."
+    ) as response:
+        response.stream_to_file("out.mp3")
+    print("Output file: out.mp3")
+```
+
+Or provide a reference audio to use the voice cloning feature:
+
+```python
+from openai import OpenAI
+import base64
+
+
+def openai_speech():
+    client = OpenAI(
+        base_url=f"{BASE_URL}/v1",
+        api_key="not-needed"  # If an API key is set, please provide it
+    )
+    with open("data/mega-roles/御姐/御姐配音.wav", "rb") as f:
+        audio_bytes = f.read()
+    # Convert the binary audio data into a base64-encoded string
+    audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+
+    with client.audio.speech.with_streaming_response.create(
+            model="spark",
+            voice=audio_base64,  # Replace the 'voice' parameter with the audio's base64 to trigger voice cloning
+            input="Hello, I am the invincible little cutie."
+    ) as response:
+        response.stream_to_file("clone.mp3")
+    print("Cloned file: clone.mp3")
 ```
 
 ### Steps

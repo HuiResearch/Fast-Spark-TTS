@@ -215,7 +215,7 @@ class OpenAISpeechRequest(BaseModel):
     input: str = Field(..., description="The text to generate audio for")
     voice: str = Field(
         default=None,
-        description="The voice to use for generation. Can be a base voice or a combined voice name.",
+        description="The name of the audio character you want to use, or a URL or base64 of a reference audio.",
     )
     pitch: float = Field(
         default=1.0,

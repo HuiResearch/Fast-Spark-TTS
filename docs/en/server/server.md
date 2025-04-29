@@ -156,7 +156,7 @@ curl -X POST http://localhost:8000/clone_voice \
 - Uses `OpenAISpeechRequest` format:
     - `model`: Model ID or name
     - `input`: Text to synthesize
-    - `voice`: Voice name or preset
+    - `voice`: The name of the audio character you want to use, or a URL or base64 of a reference audio.
     - Other parameters same as Clone/Speak
 
 #### 4.5 Retrieve Available Roles: `GET /audio_roles` or `GET /v1/audio_roles`

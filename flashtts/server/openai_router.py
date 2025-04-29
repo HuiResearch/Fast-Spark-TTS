@@ -6,7 +6,7 @@ from fastapi import HTTPException, Request, APIRouter
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from .protocol import OpenAISpeechRequest, ModelCard, ModelList
 from .utils.audio_writer import StreamingAudioWriter
-from .utils.utils import generate_audio, generate_audio_stream
+from .utils.utils import generate_audio, generate_audio_stream, load_base64_or_url
 from ..engine import AutoEngine
 from ..logger import get_logger
 
@@ -91,7 +91,6 @@ async def create_speech(
                 "type": "invalid_request_error",
             },
         )
-    audio_writer = StreamingAudioWriter(request.response_format, sample_rate=engine.SAMPLE_RATE)
 
     # Set content type based on format
     content_type = {
@@ -104,7 +103,6 @@ async def create_speech(
     }.get(request.response_format, f"audio/{request.response_format}")
 
     api_inputs = dict(
-        name=request.voice,
         text=request.input,
         temperature=request.temperature,
         top_k=request.top_k,
@@ -117,10 +115,33 @@ async def create_speech(
     if engine.engine_name.lower() == 'spark':
         api_inputs['pitch'] = float_to_speed_label(request.pitch)
         api_inputs['speed'] = float_to_speed_label(request.speed)
+
+    if engine._SUPPORT_CLONE and request.voice not in engine.list_roles():
+        # 如果传入的voice为url或者base64，将启动语音克隆，暂且不支持mega3
+        if engine.engine_name == 'mega':
+            err_msg = ("Openai router does not currently support the voice cloning function of mega tts, "
+                       "because the model requires an additional `latent_file`.")
+            logger.error(err_msg)
+            raise HTTPException(status_code=400, detail={"error": err_msg})
+        ref_audio = await load_base64_or_url(request.voice)
+        api_inputs['reference_audio'] = ref_audio
+
+        if request.stream:
+            tts_fn = engine.clone_voice_stream_async
+        else:
+            tts_fn = engine.clone_voice_async
+    else:
+        api_inputs['name'] = request.voice
+        if request.stream:
+            tts_fn = engine.speak_stream_async
+        else:
+            tts_fn = engine.speak_async
+
+    audio_writer = StreamingAudioWriter(request.response_format, sample_rate=engine.SAMPLE_RATE)
     if request.stream:
         return StreamingResponse(
             generate_audio_stream(
-                engine.speak_stream_async,
+                tts_fn,
                 api_inputs,
                 audio_writer,
                 client_request
@@ -140,7 +161,7 @@ async def create_speech(
         }
         try:
             # Generate complete audio using public interface
-            audio_data = await engine.speak_async(
+            audio_data = await tts_fn(
                 **api_inputs
             )
         except Exception as e:

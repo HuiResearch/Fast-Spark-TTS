@@ -166,12 +166,37 @@ def openai_speech():
         api_key="not-needed"  # 如果设置了api key，请传入
     )
     with client.audio.speech.with_streaming_response.create(
-            model="orpheus",
-            voice="tara",
-            input="Hey there guys. It's, <giggle> Tara here, and let me introduce you to Zac.. who seems to asleep. Zac, it's time to wakey-wakey!"
+            model="spark",
+            voice="赞助商",
+            input="你好，我是无敌的小可爱。"
     ) as response:
         response.stream_to_file("output.mp3")
 
+def openai_clone():
+    """
+    openai 克隆模式，目前仅支持spark tts
+    Returns:
+
+    """
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url=f"{BASE_URL}/v1",
+        api_key="not-needed"  # 如果设置了api key，请传入
+    )
+
+    # 选取一个没有在spark tts内置角色中的音频
+    with open("data/mega-roles/御姐/御姐配音.wav", "rb") as f:
+        audio_bytes = f.read()
+    # 将二进制音频数据转换为 base64 字符串
+    audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+
+    with client.audio.speech.with_streaming_response.create(
+            model="spark",
+            voice=audio_base64,  # 使用音频的base64编码替换voice，即可触发语音克隆
+            input="你好，我是无敌的小可爱。"
+    ) as response:
+        response.stream_to_file("output.mp3")
 
 if __name__ == "__main__":
     clone_voice_stream()

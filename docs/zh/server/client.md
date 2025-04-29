@@ -193,19 +193,49 @@ def clone_voice_stream():
 
 ### 示例代码
 
+调用内置的音频角色
 ```python
 from openai import OpenAI
 
 
 def openai_speech():
-    client = OpenAI(base_url=f"{BASE_URL}/v1", api_key="YOUR_KEY")
+    client = OpenAI(
+       base_url=f"{BASE_URL}/v1",
+       api_key="not-needed"  # 如果设置了api key，请传入
+    )
     with client.audio.speech.with_streaming_response.create(
-            model="orpheus", voice="tara", input="Hello"
-    ) as r:
-        r.stream_to_file("out.mp3")
+            model="spark",
+            voice="赞助商",
+            input="你好，我是无敌的小可爱。"
+    ) as response:
+        response.stream_to_file("out.mp3")
     print("输出文件：out.mp3")
 ```
+或者传入参考音频，调用语音克隆功能
 
+```python
+from openai import OpenAI
+import base64
+
+
+def openai_speech():
+   client = OpenAI(
+      base_url=f"{BASE_URL}/v1",
+      api_key="not-needed"  # 如果设置了api key，请传入
+   )
+   with open("data/mega-roles/御姐/御姐配音.wav", "rb") as f:
+      audio_bytes = f.read()
+   # 将二进制音频数据转换为 base64 字符串
+   audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+
+   with client.audio.speech.with_streaming_response.create(
+           model="spark",
+           voice=audio_base64,  # 使用音频的base64编码替换voice，即可触发语音克隆
+           input="你好，我是无敌的小可爱。"
+   ) as response:
+      response.stream_to_file("clone.mp3")
+   print("克隆文件：out.mp3")
+```
 ### 步骤说明
 
 1. 初始化 OpenAI 客户端，指定 base_url。

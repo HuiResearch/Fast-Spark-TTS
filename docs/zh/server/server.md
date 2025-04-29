@@ -150,7 +150,7 @@ curl -X POST http://localhost:8000/clone_voice \
 - 路径与功能与上述接口一致，使用 `OpenAISpeechRequest` 协议：
     - `model`: 模型 ID 或名称
     - `input`: 合成文本
-    - `voice`: 基础或组合 voice 名称
+    - `voice`: 您想要使用的音频字符的名称，或者参考音频的 URL 或 base64。
     - 其他参数同 Clone/Speak。
 
 #### 4.5 获取角色列表：`GET /audio_roles` 或 `GET /v1/audio_roles`
