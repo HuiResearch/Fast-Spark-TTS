@@ -1,7 +1,7 @@
 <div align="center">
   <img src="docs/zh/_img/icon.png" width="450" alt="FlashTTS Logo"/>
 
-[📘 Documentation](docs/zh/README.MD)
+[📘 Documentation](docs/zh/README.MD) | [📚 Deepwiki](https://deepwiki.com/HuiResearch/FlashTTS)
 
 [中文](README.MD) | [English](README_EN.MD)
 
@@ -212,6 +212,7 @@ flashtts infer \
  --host 0.0.0.0 \
  --port 8000
  ```
+详细部署说明，请参考：[server.md](docs/zh/server/server.md)
     
 ## ⚡ 推理速度
 

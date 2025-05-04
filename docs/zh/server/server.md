@@ -4,8 +4,9 @@
 
 1. 参考安装文档: [installation.md](../get_started/installation.md)
 2. 启动服务：
+   
+   - spark tts
    ```bash
-
     flashtts serve \
     --model_path Spark-TTS-0.5B \ # 可修改为自己的模型地址
     --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm任选一个
@@ -13,14 +14,43 @@
     --tokenizer_device cuda \
     --detokenizer_device cuda \
     --wav2vec_attn_implementation sdpa \
-    --llm_attn_implementation sdpa \ # 如果使用torch engine，最好开启加速
+    --llm_attn_implementation sdpa \ # 如果backend为torch，最好开启加速
     --torch_dtype "bfloat16" \ # 对于spark-tts模型，不支持bfloat16的设备，只能设置为float32.
     --max_length 32768 \
     --llm_gpu_memory_utilization 0.6 \
     --host 0.0.0.0 \
     --port 8000
-    
     ```
+   - mega tts
+   ```bash
+    flashtts serve \
+    --model_path MegaTTS3 \ # 可修改为自己的模型地址
+    --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm任选一个
+    --llm_device cuda \
+    --tokenizer_device cuda \
+    --llm_attn_implementation sdpa \ # 如果backend为torch，最好开启加速
+    --torch_dtype "float16" \ 
+    --max_length 8192 \
+    --llm_gpu_memory_utilization 0.6 \
+    --host 0.0.0.0 \
+    --port 8000
+    ```
+   - orphpeus tts
+   ```bash
+    flashtts serve \
+    --model_path orpheus-3b-0.1-ft-bf16 \ # 可修改为自己的模型地址
+    --lang english \
+    --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm任选一个
+    --llm_device cuda \
+    --detokenizer_device cuda \
+    --llm_attn_implementation sdpa \ # 如果backend为torch，最好开启加速
+    --torch_dtype "float16" \ 
+    --max_length 8192 \
+    --llm_gpu_memory_utilization 0.6 \
+    --host 0.0.0.0 \
+    --port 8000
+    ```
+   
 3. 在浏览器中访问页面
 
   ```

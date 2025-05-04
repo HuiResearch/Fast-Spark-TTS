@@ -1,7 +1,7 @@
 <div align="center">
   <img src="docs/zh/_img/icon.png" width="450" alt="FlashTTS Logo"/>
 
-[📘 Documentation](docs/en/README.MD)
+[📘 Documentation](docs/zh/README.MD) | [📚 Deepwiki](https://deepwiki.com/HuiResearch/FlashTTS)
 
 [中文](README.MD) | [English](README_EN.MD)
 
@@ -163,6 +163,8 @@ Server deployment:
  --host 0.0.0.0 \
  --port 8000
  ```
+
+For detailed deployment，please refer to: [server.md](docs/en/server/server.md)
 
 ## ⚡ Inference Speed
 
