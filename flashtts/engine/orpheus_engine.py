@@ -84,7 +84,8 @@ class AsyncOrpheusEngine(BaseEngine):
             snac_path: Optional[str] = None,
             llm_device: Literal["cpu", "cuda", "mps", "auto"] | str = "auto",
             detokenizer_device: Literal["cpu", "cuda", "mps", "auto"] | str = "auto",
-            backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm"] = "torch",
+            llm_tensorrt_path: Optional[str] = None,
+            backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm", "tensorrt-llm"] = "torch",
             llm_attn_implementation: Optional[Literal["sdpa", "flash_attention_2", "eager"]] = None,
             torch_dtype: Literal['float16', "bfloat16", 'float32', 'auto'] = "auto",
             llm_gpu_memory_utilization: Optional[float] = 0.8,  # snac模型显存暂用很小
@@ -122,6 +123,7 @@ class AsyncOrpheusEngine(BaseEngine):
             llm_model_path=model_path,
             max_length=max_length,
             llm_device=llm_device,
+            llm_tensorrt_path=llm_tensorrt_path,
             backend=backend,
             llm_attn_implementation=llm_attn_implementation,
             torch_dtype=torch_dtype,

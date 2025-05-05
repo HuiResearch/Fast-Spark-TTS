@@ -60,26 +60,27 @@ if __name__ == '__main__':
 
 ## 初始化参数
 
-| 参数                            | 类型                                                      | 默认值       | 描述                                                    |
-|-------------------------------|---------------------------------------------------------|-----------|-------------------------------------------------------|
-| `model_path`                  | `str`                                                   | —         | 模型根目录路径，包含引擎对应的子目录。                                   |
-| `max_length`                  | `int`                                                   | `32768`   | LLM 最大上下文长度，与 Spark 引擎一致；Orpheus 默认为 `8192`。          |
-| `snac_path`                   | `Optional[str]`                                         | `None`    | Orpheus SNAC 模块权重路径；若 `model_path` 下已有 `snac` 子目录可省略。 |
-| `lang`                        | `Literal["mandarin", "french", …, "english", None]`     | `None`    | Orpheus 支持的语言类型。                                      |
-| `llm_device`                  | `Literal["cpu","cuda","mps","auto"] \| str`             | `"auto"`  | LLM 模块计算设备。                                           |
-| `tokenizer_device`            | 同上                                                      | `"auto"`  | 音频 tokenizer 计算设备（Spark/Mega）。                        |
-| `detokenizer_device`          | 同上                                                      | `"auto"`  | 音频 detokenizer 计算设备（Spark/Orpheus）。                   |
-| `backend`                     | `Literal["vllm","llama-cpp","sglang","torch","mlx-lm"]` | `"torch"` | LLM 加速后端，各引擎均支持。                                      |
-| `wav2vec_attn_implementation` | `Optional[Literal["sdpa","flash_attention_2","eager"]]` | `None`    | Spark wav2vec 注意力算子实现。                                |
-| `llm_attn_implementation`     | 同上                                                      | `None`    | LLM 注意力算子实现。                                          |
-| `torch_dtype`                 | `Literal['float16','bfloat16','float32','auto']`        | `"auto"`  | LLM 权重量化类型；Mega 支持任意精度。                               |
-| `llm_gpu_memory_utilization`  | `Optional[float]`                                       | `0.6`     | vllm/sglang 后端显存占用率上限。                                |
-| `cache_implementation`        | `Optional[str]`                                         | `None`    | 缓存策略实现名称，仅在`backend`为`torch`时生效。                      |
-| `batch_size`                  | `int`                                                   | `1`       | tokenizer / detokenizer 并发批处理大小。                      |
-| `llm_batch_size`              | `int`                                                   | `256`     | LLM 解码并行批处理大小。                                        |
-| `wait_timeout`                | `float`                                                 | `0.01`    | tokenizer / detokenizer 异步等待超时。                       |
-| `seed`                        | `int`                                                   | `0`       | 随机种子。                                                 |
-| `**kwargs`                    |                                                         | —         | LLM后端特定额外参数                                           |
+| 参数                            | 类型                                                                    | 默认值       | 描述                                                                                |
+|-------------------------------|-----------------------------------------------------------------------|-----------|-----------------------------------------------------------------------------------|
+| `model_path`                  | `str`                                                                 | —         | 模型根目录路径，包含引擎对应的子目录。                                                               |
+| `max_length`                  | `int`                                                                 | `32768`   | LLM 最大上下文长度，与 Spark 引擎一致；Orpheus 默认为 `8192`。                                      |
+| `snac_path`                   | `Optional[str]`                                                       | `None`    | Orpheus SNAC 模块权重路径；若 `model_path` 下已有 `snac` 子目录可省略。                             |
+| `--llm_tensorrt_path`         | `str`                                                                 | `None`    | tensorrt模型路径，仅在backend设置为tensorrt-llm时生效。如果不传入，则默认为`{model_path}/tensorrt-engine` |
+| `lang`                        | `Literal["mandarin", "french", …, "english", None]`                   | `None`    | Orpheus 支持的语言类型。                                                                  |
+| `llm_device`                  | `Literal["cpu","cuda","mps","auto"] \| str`                           | `"auto"`  | LLM 模块计算设备。                                                                       |
+| `tokenizer_device`            | 同上                                                                    | `"auto"`  | 音频 tokenizer 计算设备（Spark/Mega）。                                                    |
+| `detokenizer_device`          | 同上                                                                    | `"auto"`  | 音频 detokenizer 计算设备（Spark/Orpheus）。                                               |
+| `backend`                     | `Literal["vllm","llama-cpp","sglang","torch","mlx-lm","tensorrt-lm"]` | `"torch"` | LLM 加速后端，各引擎均支持。                                                                  |
+| `wav2vec_attn_implementation` | `Optional[Literal["sdpa","flash_attention_2","eager"]]`               | `None`    | Spark wav2vec 注意力算子实现。                                                            |
+| `llm_attn_implementation`     | 同上                                                                    | `None`    | LLM 注意力算子实现。                                                                      |
+| `torch_dtype`                 | `Literal['float16','bfloat16','float32','auto']`                      | `"auto"`  | LLM 权重量化类型；Mega 支持任意精度。                                                           |
+| `llm_gpu_memory_utilization`  | `Optional[float]`                                                     | `0.6`     | vllm/sglang 后端显存占用率上限。                                                            |
+| `cache_implementation`        | `Optional[str]`                                                       | `None`    | 缓存策略实现名称，仅在`backend`为`torch`时生效。                                                  |
+| `batch_size`                  | `int`                                                                 | `1`       | tokenizer / detokenizer 并发批处理大小。                                                  |
+| `llm_batch_size`              | `int`                                                                 | `256`     | LLM 解码并行批处理大小。                                                                    |
+| `wait_timeout`                | `float`                                                               | `0.01`    | tokenizer / detokenizer 异步等待超时。                                                   |
+| `seed`                        | `int`                                                                 | `0`       | 随机种子。                                                                             |
+| `**kwargs`                    |                                                                       | —         | LLM后端特定额外参数                                                                       |
 
 初始化时会打印类似：
 

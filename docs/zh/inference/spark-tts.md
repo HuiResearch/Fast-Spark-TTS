@@ -183,22 +183,23 @@ engine.write_audio(audio, "stream.wav")
 
 ### `AsyncSparkEngine` 初始化参数说明
 
-| 参数                            | 类型      | 默认值     | 描述                                                      |
-|-------------------------------|---------|---------|---------------------------------------------------------|
-| `model_path`                  | `str`   | —       | 模型根目录路径，包含 LLM、tokenizer、detokenizer 权重                 |
-| `max_length`                  | `int`   | `32768` | LLM 最大上下文长度                                             |
-| `llm_device`                  | `str`   | `auto`  | LLM模块计算设备                                               |
-| `tokenizer_device`            | 同上      | `auto`  | 音频 tokenizer 计算设备                                       |
-| `detokenizer_device`          | 同上      | `auto`  | 音频 detokenizer 计算设备                                     |
-| `backend`                     | `str`   | `torch` | LLM加速后端，支持`torch`、`vllm`、`sglang`、`llama cpp`、`mlx-lm`  |
-| `wav2vec_attn_implementation` | `str`   | `eager` | `wav2vec`模型的注意力算子，可选 `sdpa`、`flash_attention_2`、`eager` | 
-| `llm_attn_implementation`     | 同上      | `eager` | LLM 注意力算子实现                                             |
-| `torch_dtype`                 | `str`   | `auto`  | LLM模块权重量化类型选择，支持 `float16`、`bfloat16`、`float32`         |
-| `llm_gpu_memory_utilization`  | `float` | `0.6`   | 后端显存占用率上限（仅 vllm/sglang 有效）                             |
-| `batch_size`                  | `int`   | `1`     | 音频 tokenizer / detokenizer 并发批处理大小                      |
-| `llm_batch_size`              | `int`   | `256`   | LLM 解码并行批处理大小                                           |
-| `wait_timeout`                | `float` | `0.01`  | tokenizer / detokenizer 异步等待超时                          |
-| `seed`                        | `int`   | `0`     | 随机种子                                                    |
+| 参数                            | 类型      | 默认值     | 描述                                                                                |
+|-------------------------------|---------|---------|-----------------------------------------------------------------------------------|
+| `model_path`                  | `str`   | —       | 模型根目录路径，包含 LLM、tokenizer、detokenizer 权重                                           |
+| `max_length`                  | `int`   | `32768` | LLM 最大上下文长度                                                                       |
+| `llm_device`                  | `str`   | `auto`  | LLM模块计算设备                                                                         |
+| `tokenizer_device`            | 同上      | `auto`  | 音频 tokenizer 计算设备                                                                 |
+| `detokenizer_device`          | 同上      | `auto`  | 音频 detokenizer 计算设备                                                               |
+| `backend`                     | `str`   | `torch` | LLM加速后端，支持`torch`、`vllm`、`sglang`、`llama cpp`、`mlx-lm`、`tensorrt-llm`             |
+| `--llm_tensorrt_path`         | `str`   | `None`  | tensorrt模型路径，仅在backend设置为tensorrt-llm时生效。如果不传入，则默认为`{model_path}/tensorrt-engine` |
+| `wav2vec_attn_implementation` | `str`   | `eager` | `wav2vec`模型的注意力算子，可选 `sdpa`、`flash_attention_2`、`eager`                           | 
+| `llm_attn_implementation`     | 同上      | `eager` | LLM 注意力算子实现                                                                       |
+| `torch_dtype`                 | `str`   | `auto`  | LLM模块权重量化类型选择，支持 `float16`、`bfloat16`、`float32`                                   |
+| `llm_gpu_memory_utilization`  | `float` | `0.6`   | 后端显存占用率上限（仅 vllm/sglang 有效）                                                       |
+| `batch_size`                  | `int`   | `1`     | 音频 tokenizer / detokenizer 并发批处理大小                                                |
+| `llm_batch_size`              | `int`   | `256`   | LLM 解码并行批处理大小                                                                     |
+| `wait_timeout`                | `float` | `0.01`  | tokenizer / detokenizer 异步等待超时                                                    |
+| `seed`                        | `int`   | `0`     | 随机种子                                                                              |
 
 ### 主要接口参数说明
 

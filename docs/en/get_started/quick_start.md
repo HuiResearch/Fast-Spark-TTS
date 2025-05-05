@@ -36,6 +36,7 @@ flashtts infer \
 | `-b, --backend`                 | `str`   | —       | Yes      | Inference backend: `llama-cpp, vllm, sglang, mlx-lm, torch`                               |
 | `--lang`                        | `str`   | `None`  | No       | Language type for OrpheusTTS, e.g., `mandarin, english, french`, etc.                     |
 | `--snac_path`                   | `str`   | `None`  | No       | Path to SNAC module for OrpheusTTS                                                        |
+| `--llm_tensorrt_path`           | `str`   | `None`  | No  | Path to the TensorRT model. Only effective when the backend is set to `tensorrt-llm`. If not provided, defaults to `{model_path}/tensorrt-engine` |
 | `--llm_device`                  | `str`   | `auto`  | No       | Device for LLM computation: `cpu` or `cuda`                                               |
 | `--tokenizer_device`            | `str`   | `auto`  | No       | Device for audio tokenizer                                                                |
 | `--detokenizer_device`          | `str`   | `auto`  | No       | Device for audio detokenizer                                                              |

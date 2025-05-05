@@ -73,6 +73,19 @@ def prepare_engine():
     #     torch_dtype="bfloat16",
     #     seed=0
     # )
+    # TensorRT-LLM
+    # engine = AutoEngine(
+    #     model_path="checkpoints\Spark-TTS-0.5B",
+    #     max_length=8192,
+    #     llm_device="cuda",
+    #     tokenizer_device="cuda",
+    #     detokenizer_device="cuda",
+    #     backend="tensorrt-llm",
+    #     wav2vec_attn_implementation="sdpa",  # 使用flash attn加速wav2vec
+    #     llm_batch_size=2,  # 低显存GPU适当减少批次大小
+    #     seed=0,
+    #     torch_dtype="bfloat16"
+    # )
     # vllm
     engine = AutoEngine(
         model_path="checkpoints/orpheus-3b-0.1-ft",

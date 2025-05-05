@@ -75,6 +75,7 @@ class InferCommand(BaseCLICommand):
             tokenizer_device=args.tokenizer_device,
             detokenizer_device=args.detokenizer_device,
             backend=args.backend,
+            llm_tensorrt_path=args.llm_tensorrt_path,
             wav2vec_attn_implementation=args.wav2vec_attn_implementation,
             llm_attn_implementation=args.llm_attn_implementation,
             llm_gpu_memory_utilization=args.llm_gpu_memory_utilization,
@@ -138,3 +139,5 @@ class InferCommand(BaseCLICommand):
                 max_tokens=self._args.max_tokens
             ))
         self.engine.write_audio(audio, self._args.output)
+
+        self.engine.shutdown()

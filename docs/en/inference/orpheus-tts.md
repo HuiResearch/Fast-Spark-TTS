@@ -131,22 +131,23 @@ methods:
 
 ### `AsyncOrpheusEngine` Initialization Parameters
 
-| Parameter                    | Type    | Default | Description                                                      |
-|------------------------------|---------|---------|------------------------------------------------------------------|
-| `model_path`                 | `str`   | —       | Path to model directory including LLM and SNAC weights           |
-| `max_length`                 | `int`   | `8192`  | Maximum LLM context length                                       |
-| `lang`                       | `str`   | `None`  | Language supported by the model                                  |
-| `snac_path`                  | `str`   | `None`  | Path to SNAC module; optional if included in `model_path`        |
-| `llm_device`                 | `str`   | `auto`  | Device for LLM module                                            |
-| `detokenizer_device`         | same    | `auto`  | Device for audio detokenizer                                     |
-| `backend`                    | `str`   | `torch` | Backend for LLM, supports `torch`, `vllm`, `sglang`, etc.        |
-| `llm_attn_implementation`    | same    | `eager` | Attention implementation (torch only)                            |
-| `torch_dtype`                | `str`   | `auto`  | Data type for LLM weights, e.g. `float16`, `bfloat16`, `float32` |
-| `llm_gpu_memory_utilization` | `float` | `0.6`   | GPU memory cap (only for vllm/sglang)                            |
-| `batch_size`                 | `int`   | `1`     | Audio tokenizer/detokenizer batch size                           |
-| `llm_batch_size`             | `int`   | `256`   | LLM decoding batch size                                          |
-| `wait_timeout`               | `float` | `0.01`  | Timeout for async tokenizer/detokenizer                          |
-| `seed`                       | `int`   | `0`     | Random seed                                                      |
+| Parameter                    | Type    | Default | Description                                                                                                                                       |
+|------------------------------|---------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `model_path`                 | `str`   | —       | Path to model directory including LLM and SNAC weights                                                                                            |
+| `max_length`                 | `int`   | `8192`  | Maximum LLM context length                                                                                                                        |
+| `lang`                       | `str`   | `None`  | Language supported by the model                                                                                                                   |
+| `snac_path`                  | `str`   | `None`  | Path to SNAC module; optional if included in `model_path`                                                                                         |
+| `llm_device`                 | `str`   | `auto`  | Device for LLM module                                                                                                                             |
+| `detokenizer_device`         | same    | `auto`  | Device for audio detokenizer                                                                                                                      |
+| `backend`                    | `str`   | `torch` | Backend for LLM, supports `torch`, `vllm`, `sglang`, `llama-cpp`, `tensorrt-llm`, `mlx-lm`, etc.                                                  |
+| `--llm_tensorrt_path`        | `str`   | `None`  | Path to the TensorRT model. Only effective when the backend is set to `tensorrt-llm`. If not provided, defaults to `{model_path}/tensorrt-engine` |
+| `llm_attn_implementation`    | same    | `eager` | Attention implementation (torch only)                                                                                                             |
+| `torch_dtype`                | `str`   | `auto`  | Data type for LLM weights, e.g. `float16`, `bfloat16`, `float32`                                                                                  |
+| `llm_gpu_memory_utilization` | `float` | `0.6`   | GPU memory cap (only for vllm/sglang)                                                                                                             |
+| `batch_size`                 | `int`   | `1`     | Audio tokenizer/detokenizer batch size                                                                                                            |
+| `llm_batch_size`             | `int`   | `256`   | LLM decoding batch size                                                                                                                           |
+| `wait_timeout`               | `float` | `0.01`  | Timeout for async tokenizer/detokenizer                                                                                                           |
+| `seed`                       | `int`   | `0`     | Random seed                                                                                                                                       |
 
 ### Main Method Parameter Descriptions
 

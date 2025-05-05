@@ -6,7 +6,7 @@ from typing import Literal
 
 import torch
 
-from flashtts import AsyncSparkEngine
+from flashtts import AutoEngine
 import asyncio
 import time
 
@@ -26,7 +26,6 @@ long_text = ("今日是二零二五年三月十九日，国内外热点事件聚
 short_text = "身临其境，换新体验。塑造开源语音合成新范式，让智能语音更自然。"
 
 generate_config = dict(
-    gender="female",
     pitch="moderate",
     speed="moderate",
     temperature=0.9,
@@ -38,16 +37,18 @@ generate_config = dict(
 
 async def run(
         model_path: str,
-        backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm"] = "torch",
+        backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm", "tensorrt-llm"] = "torch",
         device: Literal["cpu", "cuda", "auto"] | str = "auto"
 ):
     model_kwargs = {
         "model_path": model_path,
-        "max_length": 32768,
+        "max_length": 8192,
         "llm_device": device,
         "tokenizer_device": device,
         "detokenizer_device": device,
-        "backend": backend
+        "backend": backend,
+        "torch_dtype": "bfloat16",
+        "llm_batch_size": 8
     }
 
     if torch.cuda.is_available():
@@ -55,21 +56,20 @@ async def run(
         model_kwargs["llm_gpu_memory_utilization"] = 0.6
 
     if backend == "torch":
-        model_kwargs["torch_dtype"] = "bfloat16"
         model_kwargs["llm_attn_implementation"] = 'sdpa'
 
-    model = AsyncSparkEngine(**model_kwargs)
+    model = AutoEngine(**model_kwargs)
 
     # warmup
-    await model.generate_voice_async(text="你好。", max_tokens=64)
+    await model.speak_async(text="你好。", max_tokens=64)
 
     start_time = time.perf_counter()
 
-    short_audio = await model.generate_voice_async(text=short_text, **generate_config)
+    short_audio = await model.speak_async(text=short_text, **generate_config)
 
     end_time = time.perf_counter()
 
-    long_audio = await model.generate_voice_async(
+    long_audio = await model.speak_async(
         text=long_text, **generate_config, length_threshold=50, window_size=50)
 
     end_time2 = time.perf_counter()
@@ -82,6 +82,7 @@ async def run(
     print(
         f"长文本推理耗时：{end_time2 - end_time} s, 长文本输出音频长度：{long_len}，RTF: {(end_time2 - end_time) / long_len}")
 
+    model.shutdown()
 
 if __name__ == '__main__':
     asyncio.run(run(backend="sglang", model_path="Spark-TTS-0.5B", device="cuda"))

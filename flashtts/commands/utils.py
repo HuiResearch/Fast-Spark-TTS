@@ -8,11 +8,17 @@ def add_model_parser(arg_parser):
                             help="Path to the TTS model")
 
     arg_parser.add_argument("-b", "--backend", type=str, required=True,
-                            choices=["llama-cpp", "vllm", "sglang", "torch", "mlx-lm"],
-                            help="Backend type, e.g., llama-cpp, vllm, sglang, mlx-lm, or torch")
+                            choices=["llama-cpp", "vllm", "sglang", "torch", "mlx-lm", "tensorrt-llm"],
+                            help="Backend type, e.g., llama-cpp, vllm, sglang, mlx-lm, torch, or tensorrt-llm")
     arg_parser.add_argument(
         "--lang", type=str, default=None,
         help="Language type for Orpheus TTS model, e.g., mandarin, french, german, korean, hindi, spanish, italian, spanish_italian, english")
+    arg_parser.add_argument(
+        "--llm_tensorrt_path", type=str, default=None,
+        help="The path where the TensorRT-LLM engine is located. "
+             "This directory should contain a `config.json` file and a file with the `.engine` extension. "
+             "This is only effective when the `backend` is set to `tensorrt-llm`."
+    )
     arg_parser.add_argument("--snac_path", type=str, default=None,
                             help="Path to the SNAC module for OrpheusTTS")
     arg_parser.add_argument("--llm_device", type=str, default="auto",

@@ -4,12 +4,12 @@
 
 1. 参考安装文档: [installation.md](../get_started/installation.md)
 2. 启动服务：
-   
-   - spark tts
+
+    - spark tts
    ```bash
     flashtts serve \
     --model_path Spark-TTS-0.5B \ # 可修改为自己的模型地址
-    --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm任选一个
+    --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm、tensorrt-llm任选一个
     --llm_device cuda \
     --tokenizer_device cuda \
     --detokenizer_device cuda \
@@ -21,11 +21,11 @@
     --host 0.0.0.0 \
     --port 8000
     ```
-   - mega tts
+    - mega tts
    ```bash
     flashtts serve \
     --model_path MegaTTS3 \ # 可修改为自己的模型地址
-    --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm任选一个
+    --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm、tensorrt-llm任选一个
     --llm_device cuda \
     --tokenizer_device cuda \
     --llm_attn_implementation sdpa \ # 如果backend为torch，最好开启加速
@@ -35,12 +35,12 @@
     --host 0.0.0.0 \
     --port 8000
     ```
-   - orphpeus tts
+    - orphpeus tts
    ```bash
     flashtts serve \
     --model_path orpheus-3b-0.1-ft-bf16 \ # 可修改为自己的模型地址
     --lang english \
-    --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm任选一个
+    --backend vllm \ # vllm、sglang、torch、llama-cpp、mlx-lm、tensorrt-llm任选一个
     --llm_device cuda \
     --detokenizer_device cuda \
     --llm_attn_implementation sdpa \ # 如果backend为torch，最好开启加速
@@ -50,7 +50,7 @@
     --host 0.0.0.0 \
     --port 8000
     ```
-   
+
 3. 在浏览器中访问页面
 
   ```
@@ -68,8 +68,9 @@
 | 参数                              | 类型    | 描述                                                                                             | 默认值                     |
 |---------------------------------|-------|------------------------------------------------------------------------------------------------|-------------------------|
 | `--model_path`                  | str   | 必填，TTS 模型目录路径                                                                                  | —                       |
-| `--backend`                     | str   | 必填，合成引擎类型，可选：`llama-cpp`, `vllm`, `sglang`, `torch`, `mlx-lm`                                  | —                       |
+| `--backend`                     | str   | 必填，合成引擎类型，可选：`llama-cpp`, `vllm`, `sglang`, `torch`, `mlx-lm`, `tensorrt-llm`                  | —                       |
 | `--snac_path`                   | str   | `OrpheusTTS` 的 `SNAC` 模块路径，仅当 `model` 为 `orpheus` 时使用                                          | None                    |
+| `--llm_tensorrt_path`           | `str` | tensorrt模型路径，仅在backend设置为tensorrt-llm时生效。如果不传入，则默认为`{model_path}/tensorrt-engine`              | `None`                  |
 | `--role_dir`                    | str   | 加载角色音频参考目录：Spark 引擎 默认 `data/roles`，Mega 引擎 默认 `data/mega-roles`                               | Spark: `data/roles`     |
 |                                 |       |                                                                                                | Mega: `data/mega-roles` |
 | `--api_key`                     | str   | API 访问密钥，启用后所有请求需在 `Authorization: Bearer <KEY>` 中携带                                           | None                    |

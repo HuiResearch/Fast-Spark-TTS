@@ -110,6 +110,7 @@ def build_app(args) -> FastAPI:
             tokenizer_device=args.tokenizer_device,
             detokenizer_device=args.detokenizer_device,
             backend=args.backend,
+            llm_tensorrt_path=args.llm_tensorrt_path,
             wav2vec_attn_implementation=args.wav2vec_attn_implementation,
             llm_attn_implementation=args.llm_attn_implementation,
             llm_gpu_memory_utilization=args.llm_gpu_memory_utilization,
@@ -130,7 +131,10 @@ def build_app(args) -> FastAPI:
         await warmup_engine(engine)
         # 将 engine 保存到 app.state 中，方便路由中使用
         app.state.engine = engine
+
         yield
+
+        engine.shutdown()
 
     app = FastAPI(lifespan=lifespan)
 

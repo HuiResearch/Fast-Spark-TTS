@@ -50,7 +50,8 @@ class AutoEngine(Engine):
             llm_device: Literal["cpu", "cuda", "mps", "auto"] | str = "auto",
             tokenizer_device: Literal["cpu", "cuda", "mps", "auto"] | str = "auto",
             detokenizer_device: Literal["cpu", "cuda", "mps", "auto"] | str = "auto",
-            backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm"] = "torch",
+            llm_tensorrt_path: Optional[str] = None,
+            backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm", "tensorrt-llm"] = "torch",
             wav2vec_attn_implementation: Optional[Literal["sdpa", "flash_attention_2", "eager"]] = None,
             llm_attn_implementation: Optional[Literal["sdpa", "flash_attention_2", "eager"]] = None,
             torch_dtype: Literal['float16', "bfloat16", 'float32', 'auto'] = "auto",
@@ -68,6 +69,7 @@ class AutoEngine(Engine):
             model_path=model_path,
             max_length=max_length,
             llm_device=llm_device,
+            llm_tensorrt_path=llm_tensorrt_path,
             backend=backend,
             llm_attn_implementation=llm_attn_implementation,
             torch_dtype=torch_dtype,
@@ -134,6 +136,12 @@ class AutoEngine(Engine):
             return "orpheus"
         else:
             raise RuntimeError("No engine found")
+
+    def shutdown(self):
+        self._engine.shutdown()
+
+    def __del__(self):
+        self.shutdown()
 
     def write_audio(self, audio: np.ndarray, filepath: str):
         self._engine.write_audio(audio, filepath)

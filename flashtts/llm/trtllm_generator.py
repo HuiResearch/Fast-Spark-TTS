@@ -1,46 +1,53 @@
 # -*- coding: utf-8 -*-
-# Time      :2025/3/29 10:54
-# Author    :Hui Huang
+# @Time    : 2025/5/5 11:28
+# @Author  : HuangHui
+# @File    : trtllm_generator.py
+# @Project: FlashTTS
+import os.path
+from pathlib import Path
 from typing import Optional, AsyncIterator
-
 from .base_llm import BaseLLM, GenerationResponse
 
-__all__ = ["VllmGenerator"]
 
-
-class VllmGenerator(BaseLLM):
+class TrtLLMGenerator(BaseLLM):
     def __init__(
             self,
             model_path: str,
+            tensorrt_path: Optional[str] = None,
             max_length: int = 32768,
-            gpu_memory_utilization: float = 0.6,
             device: str = "cuda",
             stop_tokens: Optional[list[str]] = None,
             stop_token_ids: Optional[list[int]] = None,
+            batch_size: int = 4,
             **kwargs):
-        from vllm import AsyncEngineArgs, AsyncLLMEngine
+        from tensorrt_llm import LLM
 
-        engine_kwargs = dict(
-            model=model_path,
-            max_model_len=max_length,
-            gpu_memory_utilization=gpu_memory_utilization,
-            device=device,
-            disable_log_stats=True,
-            disable_log_requests=True,
-            **kwargs
+        assert device == 'cuda'
+
+        if tensorrt_path is None:
+            tensorrt_path = os.path.join(model_path, 'tensorrt-engine')
+
+        if not any(Path(tensorrt_path).glob(f'*engine')):
+            raise FileNotFoundError(
+                f'No tensorrt engine found at {tensorrt_path}. '
+                f'Please refer to `https://github.com/NVIDIA/TensorRT-LLM` to convert the LLM weights into a TensorRT engine file and place it in the {tensorrt_path} directory.')
+
+        self.model = LLM(
+            model=tensorrt_path,
+            tokenizer=model_path,
+            dtype='auto',
+            max_batch_size=batch_size,
+            max_num_tokens=kwargs.pop('max_num_tokens', max_length * batch_size),
+            **kwargs,
         )
-        async_args = AsyncEngineArgs(**engine_kwargs)
-
-        self.model = AsyncLLMEngine.from_engine_args(async_args)
-
-        super(VllmGenerator, self).__init__(
+        super().__init__(
             tokenizer=model_path,
             max_length=max_length,
             stop_tokens=stop_tokens,
             stop_token_ids=stop_token_ids,
         )
 
-    async def _get_vllm_generator(
+    async def _get_trt_generator(
             self,
             prompt_ids: list[int],
             max_tokens: int = 1024,
@@ -49,24 +56,30 @@ class VllmGenerator(BaseLLM):
             top_k: int = 50,
             repetition_penalty: float = 1.0,
             skip_special_tokens: bool = True,
+            stream: bool = False,
             **kwargs):
-        from vllm import SamplingParams
-        inputs = {"prompt_token_ids": prompt_ids}
+        from tensorrt_llm import SamplingParams
+
         sampling_params = SamplingParams(
-            n=1,
-            temperature=temperature,
-            top_p=top_p,
-            top_k=top_k,
             max_tokens=max_tokens,
-            repetition_penalty=repetition_penalty,
+            stop=self.stop_tokens,
             stop_token_ids=self.stop_token_ids,
+            n=1,
+            top_k=top_k,
+            top_p=top_p,
+            temperature=temperature,
+            repetition_penalty=repetition_penalty,
+            detokenize=True,
             skip_special_tokens=skip_special_tokens,
-            **kwargs)
-        results_generator = self.model.generate(
-            prompt=inputs,
-            request_id=await self.random_uid(),
-            sampling_params=sampling_params)
-        return results_generator
+            **kwargs
+        )
+
+        generator = self.model.generate_async(
+            inputs=prompt_ids,
+            sampling_params=sampling_params,
+            streaming=stream
+        )
+        return generator
 
     async def _generate(
             self,
@@ -78,7 +91,7 @@ class VllmGenerator(BaseLLM):
             repetition_penalty: float = 1.0,
             skip_special_tokens: bool = True,
             **kwargs) -> GenerationResponse:
-        results_generator = await self._get_vllm_generator(
+        generator = await self._get_trt_generator(
             prompt_ids=prompt_ids,
             max_tokens=max_tokens,
             temperature=temperature,
@@ -86,11 +99,12 @@ class VllmGenerator(BaseLLM):
             top_k=top_k,
             repetition_penalty=repetition_penalty,
             skip_special_tokens=skip_special_tokens,
+            stream=False,
             **kwargs
         )
         final_res = None
 
-        async for res in results_generator:
+        async for res in generator:
             final_res = res
         assert final_res is not None
         choices = []
@@ -112,7 +126,7 @@ class VllmGenerator(BaseLLM):
             skip_special_tokens: bool = True,
             **kwargs
     ) -> AsyncIterator[GenerationResponse]:
-        results_generator = await self._get_vllm_generator(
+        generator = await self._get_trt_generator(
             prompt_ids=prompt_ids,
             max_tokens=max_tokens,
             temperature=temperature,
@@ -120,11 +134,12 @@ class VllmGenerator(BaseLLM):
             top_k=top_k,
             repetition_penalty=repetition_penalty,
             skip_special_tokens=skip_special_tokens,
+            stream=False,
             **kwargs
         )
         previous_texts = ""
         previous_num_tokens = 0
-        async for res in results_generator:
+        async for res in generator:
             for output in res.outputs:
                 delta_text = output.text[len(previous_texts):]
                 previous_texts = output.text
@@ -138,6 +153,4 @@ class VllmGenerator(BaseLLM):
                 )
 
     def shutdown(self):
-        if hasattr(
-                self.model, "shutdown"):
-            self.model.shutdown()
+        self.model._shutdown()

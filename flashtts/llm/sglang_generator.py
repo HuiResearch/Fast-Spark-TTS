@@ -127,3 +127,9 @@ class SglangGenerator(BaseLLM):
                 text=delta_text,
                 token_ids=delta_tokens,
             )
+
+    def shutdown(self):
+        try:
+            self.model.shutdown()
+        except:
+            pass

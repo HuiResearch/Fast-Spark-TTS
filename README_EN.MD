@@ -19,16 +19,16 @@
 
 ## ✨ Highlights
 
-|     | Feature                        | Description                                                                                    |
-|-----|--------------------------------|------------------------------------------------------------------------------------------------|
-| 🚀  | **Multi-backend Acceleration** | Supports high-performance inference engines like `vllm`, `sglang`, `llama-cpp`, `mlx-lm`, etc. |
-| 🎯  | **High Concurrency**           | Dynamic batching and asynchronous queues to handle heavy traffic with ease                     |
-| 🎛️ | **Full Parameter Control**     | Adjust pitch, speaking rate, temperature, emotion tags, and more                               |
-| 📱  | **Lightweight Deployment**     | Built on FastAPI—start with a single command; minimal dependencies                             |
-| 🔊  | **Long-form Synthesis**        | Supports very long texts while maintaining consistent voice quality                            |
-| 🔄  | **Streaming TTS**              | Generate and play audio in real time; reduces wait time, enhances interactivity                |
-| 🎭  | **Multi-character Dialog**     | Synthesize multiple roles within the same text—ideal for script dubbing                        |
-| 🎨  | **Modern Frontend**            | Web-ready, responsive interface                                                                |
+|     | Feature                        | Description                                                                                                   |
+|-----|--------------------------------|---------------------------------------------------------------------------------------------------------------|
+| 🚀  | **Multi-backend Acceleration** | Supports high-performance inference engines like `vllm`, `sglang`, `llama-cpp`, `mlx-lm`,`tensorrt-llm`, etc. |
+| 🎯  | **High Concurrency**           | Dynamic batching and asynchronous queues to handle heavy traffic with ease                                    |
+| 🎛️ | **Full Parameter Control**     | Adjust pitch, speaking rate, temperature, emotion tags, and more                                              |
+| 📱  | **Lightweight Deployment**     | Built on FastAPI—start with a single command; minimal dependencies                                            |
+| 🔊  | **Long-form Synthesis**        | Supports very long texts while maintaining consistent voice quality                                           |
+| 🔄  | **Streaming TTS**              | Generate and play audio in real time; reduces wait time, enhances interactivity                               |
+| 🎭  | **Multi-character Dialog**     | Synthesize multiple roles within the same text—ideal for script dubbing                                       |
+| 🎨  | **Modern Frontend**            | Web-ready, responsive interface                                                                               |
 
 ## 🖼️ Frontend Demo
 
@@ -134,6 +134,7 @@ pip install flashtts
 For detailed installation steps, please refer to: [installation guide](docs/zh/get_started/installation.md)
 
 Local inference command:：
+
 ```bash
 flashtts infer \
   -i "hello world." \

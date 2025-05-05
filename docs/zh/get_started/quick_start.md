@@ -30,25 +30,26 @@ flashtts infer \
 
 ## 模型加载参数（`add_model_parser`）
 
-| 参数                              | 类型      | 默认      | 必需 | 说明                                                                          |
-|---------------------------------|---------|---------|----|-----------------------------------------------------------------------------|
-| `-m, --model_path`              | `str`   | —       | 是  | TTS 模型目录或权重文件路径                                                             |
-| `-b, --backend`                 | `str`   | —       | 是  | 推理后端，可选 `llama-cpp, vllm, sglang, mlx-lm, torch`                            |
-| `--lang`                        | `str`   | `None`  | 否  | OrpheusTTS 语言类型，如 `mandarin, english, french` 等                             |
-| `--snac_path`                   | `str`   | `None`  | 否  | OrpheusTTS 专用 SNAC 模块路径                                                     |
-| `--llm_device`                  | `str`   | `auto`  | 否  | LLM 运算设备，如 `cpu` 或 `cuda`                                                   |
-| `--tokenizer_device`            | `str`   | `auto`  | 否  | Audio tokenizer 运算设备                                                        |
-| `--detokenizer_device`          | `str`   | `auto`  | 否  | Audio detokenizer 运算设备                                                      |
-| `--wav2vec_attn_implementation` | `str`   | `eager` | 否  | wav2vec 注意力实现：`sdpa, flash_attention_2, eager`                              |
-| `--llm_attn_implementation`     | `str`   | `eager` | 否  | LLM 注意力实现：同上                                                                |
-| `--max_length`                  | `int`   | `32768` | 否  | 最大生成长度（Token 数）                                                             |
-| `--llm_gpu_memory_utilization`  | `float` | `0.6`   | 否  | `vllm`/`sglang` 后端 GPU 显存利用比例                                               |
-| `--torch_dtype`                 | `str`   | `auto`  | 否  | Torch 后端数据类型：`float16, bfloat16, float32, auto`                             |
-| `--cache_implementation`        | `str`   | `None`  | 否  | 解码缓存类型：`static, offloaded_static, sliding_window, hybrid, mamba, quantized` |
-| `--seed`                        | `int`   | `0`     | 否  | 随机种子                                                                        |
-| `--batch_size`                  | `int`   | `1`     | 否  | 单次合成最大并发请求数                                                                 |
-| `--llm_batch_size`              | `int`   | `256`   | 否  | 单次 LLM 最大 batch 大小                                                          |
-| `--wait_timeout`                | `float` | `0.01`  | 否  | 动态 batching 等待超时时间（秒）                                                       |
+| 参数                              | 类型      | 默认      | 必需 | 说明                                                                                |
+|---------------------------------|---------|---------|----|-----------------------------------------------------------------------------------|
+| `-m, --model_path`              | `str`   | —       | 是  | TTS 模型目录或权重文件路径                                                                   |
+| `-b, --backend`                 | `str`   | —       | 是  | 推理后端，可选 `llama-cpp, vllm, sglang, mlx-lm, torch, tensorrt-llm`                    |
+| `--lang`                        | `str`   | `None`  | 否  | OrpheusTTS 语言类型，如 `mandarin, english, french` 等                                   |
+| `--snac_path`                   | `str`   | `None`  | 否  | OrpheusTTS 专用 SNAC 模块路径                                                           |
+| `--llm_tensorrt_path`           | `str`   | `None`  | 否  | tensorrt模型路径，仅在backend设置为tensorrt-llm时生效。如果不传入，则默认为`{model_path}/tensorrt-engine` |
+| `--llm_device`                  | `str`   | `auto`  | 否  | LLM 运算设备，如 `cpu` 或 `cuda`                                                         |
+| `--tokenizer_device`            | `str`   | `auto`  | 否  | Audio tokenizer 运算设备                                                              |
+| `--detokenizer_device`          | `str`   | `auto`  | 否  | Audio detokenizer 运算设备                                                            |
+| `--wav2vec_attn_implementation` | `str`   | `eager` | 否  | wav2vec 注意力实现：`sdpa, flash_attention_2, eager`                                    |
+| `--llm_attn_implementation`     | `str`   | `eager` | 否  | LLM 注意力实现：同上                                                                      |
+| `--max_length`                  | `int`   | `32768` | 否  | 最大生成长度（Token 数）                                                                   |
+| `--llm_gpu_memory_utilization`  | `float` | `0.6`   | 否  | `vllm`/`sglang` 后端 GPU 显存利用比例                                                     |
+| `--torch_dtype`                 | `str`   | `auto`  | 否  | Torch 后端数据类型：`float16, bfloat16, float32, auto`                                   |
+| `--cache_implementation`        | `str`   | `None`  | 否  | 解码缓存类型：`static, offloaded_static, sliding_window, hybrid, mamba, quantized`       |
+| `--seed`                        | `int`   | `0`     | 否  | 随机种子                                                                              |
+| `--batch_size`                  | `int`   | `1`     | 否  | 单次合成最大并发请求数                                                                       |
+| `--llm_batch_size`              | `int`   | `256`   | 否  | 单次 LLM 最大 batch 大小                                                                |
+| `--wait_timeout`                | `float` | `0.01`  | 否  | 动态 batching 等待超时时间（秒）                                                             |
 
 ---
 

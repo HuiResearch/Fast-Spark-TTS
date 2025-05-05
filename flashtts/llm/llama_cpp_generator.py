@@ -123,3 +123,6 @@ class LlamaCppGenerator(BaseLLM):
                 text=delta_text,
                 token_ids=[token],
             )
+
+    def shutdown(self):
+        self.model.close()

@@ -150,7 +150,8 @@ class BaseEngine(Engine):
             llm_model_path: str,
             max_length: int = 32768,
             llm_device: Literal["cpu", "cuda", "mps", "auto"] | str = "auto",
-            backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm"] = "torch",
+            llm_tensorrt_path: Optional[str] = None,
+            backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm", "tensorrt-llm"] = "torch",
             llm_attn_implementation: Optional[Literal["sdpa", "flash_attention_2", "eager"]] = None,
             torch_dtype: Literal['float16', "bfloat16", 'float32', 'auto'] = "auto",
             llm_gpu_memory_utilization: Optional[float] = 0.6,
@@ -163,6 +164,7 @@ class BaseEngine(Engine):
     ):
         self.generator = initialize_llm(
             model_path=llm_model_path,
+            tensorrt_path=llm_tensorrt_path,
             backend=backend,
             max_length=max_length,
             device=self._auto_detect_device(llm_device),
@@ -182,6 +184,12 @@ class BaseEngine(Engine):
 
     def list_roles(self) -> list[str]:
         raise NotImplementedError(f"List_roles not implemented for {self.__class__.__name__}")
+
+    def shutdown(self):
+        self.generator.shutdown()
+
+    def __del__(self):
+        self.shutdown()
 
     @classmethod
     def set_seed(cls, seed: int):

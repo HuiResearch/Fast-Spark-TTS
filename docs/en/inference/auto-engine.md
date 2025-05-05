@@ -62,26 +62,27 @@ if __name__ == '__main__':
 
 ## Initialization Parameters
 
-| Parameter                     | Type                                                    | Default   | Description                                                              |
-|-------------------------------|---------------------------------------------------------|-----------|--------------------------------------------------------------------------|
-| `model_path`                  | `str`                                                   | —         | Path to the model root directory, containing engine-specific subfolders. |
-| `max_length`                  | `int`                                                   | `32768`   | Max context length for LLM. Default `8192` for Orpheus.                  |
-| `snac_path`                   | `Optional[str]`                                         | `None`    | Path to Orpheus SNAC weights; can be omitted if `snac` folder exists.    |
-| `lang`                        | `Literal["mandarin", "french", …, "english", None]`     | `None`    | Language option for Orpheus.                                             |
-| `llm_device`                  | `Literal["cpu","cuda","mps","auto"] \| str`             | `"auto"`  | Computation device for the LLM module.                                   |
-| `tokenizer_device`            | Same as above                                           | `"auto"`  | Tokenizer device (Spark/Mega).                                           |
-| `detokenizer_device`          | Same as above                                           | `"auto"`  | Detokenizer device (Spark/Orpheus).                                      |
-| `backend`                     | `Literal["vllm","llama-cpp","sglang","torch","mlx-lm"]` | `"torch"` | LLM backend accelerator. Supported by all engines.                       |
-| `wav2vec_attn_implementation` | `Optional[Literal["sdpa","flash_attention_2","eager"]]` | `None`    | Wav2vec attention implementation (Spark).                                |
-| `llm_attn_implementation`     | Same as above                                           | `None`    | Attention implementation for LLM.                                        |
-| `torch_dtype`                 | `Literal['float16','bfloat16','float32','auto']`        | `"auto"`  | Weight precision; Mega supports any precision.                           |
-| `llm_gpu_memory_utilization`  | `Optional[float]`                                       | `0.6`     | Max GPU memory usage for vllm/sglang.                                    |
-| `cache_implementation`        | `Optional[str]`                                         | `None`    | Caching strategy name (used only when `backend="torch"`).                |
-| `batch_size`                  | `int`                                                   | `1`       | Tokenizer/detokenizer batch size.                                        |
-| `llm_batch_size`              | `int`                                                   | `256`     | LLM decoding batch size.                                                 |
-| `wait_timeout`                | `float`                                                 | `0.01`    | Async wait timeout for tokenizer/detokenizer.                            |
-| `seed`                        | `int`                                                   | `0`       | Random seed.                                                             |
-| `**kwargs`                    | —                                                       | —         | Additional backend-specific parameters.                                  |
+| Parameter                     | Type                                                                    | Default   | Description                                                                                                                                       |
+|-------------------------------|-------------------------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `model_path`                  | `str`                                                                   | —         | Path to the model root directory, containing engine-specific subfolders.                                                                          |
+| `max_length`                  | `int`                                                                   | `32768`   | Max context length for LLM. Default `8192` for Orpheus.                                                                                           |
+| `snac_path`                   | `Optional[str]`                                                         | `None`    | Path to Orpheus SNAC weights; can be omitted if `snac` folder exists.                                                                             |
+| `--llm_tensorrt_path`         | `str`                                                                   | `None`    | Path to the TensorRT model. Only effective when the backend is set to `tensorrt-llm`. If not provided, defaults to `{model_path}/tensorrt-engine` |
+| `lang`                        | `Literal["mandarin", "french", …, "english", None]`                     | `None`    | Language option for Orpheus.                                                                                                                      |
+| `llm_device`                  | `Literal["cpu","cuda","mps","auto"] \| str`                             | `"auto"`  | Computation device for the LLM module.                                                                                                            |
+| `tokenizer_device`            | Same as above                                                           | `"auto"`  | Tokenizer device (Spark/Mega).                                                                                                                    |
+| `detokenizer_device`          | Same as above                                                           | `"auto"`  | Detokenizer device (Spark/Orpheus).                                                                                                               |
+| `backend`                     | `Literal["vllm","llama-cpp","sglang","torch","mlx-lm", "tensorrt-llm"]` | `"torch"` | LLM backend accelerator. Supported by all engines.                                                                                                |
+| `wav2vec_attn_implementation` | `Optional[Literal["sdpa","flash_attention_2","eager"]]`                 | `None`    | Wav2vec attention implementation (Spark).                                                                                                         |
+| `llm_attn_implementation`     | Same as above                                                           | `None`    | Attention implementation for LLM.                                                                                                                 |
+| `torch_dtype`                 | `Literal['float16','bfloat16','float32','auto']`                        | `"auto"`  | Weight precision; Mega supports any precision.                                                                                                    |
+| `llm_gpu_memory_utilization`  | `Optional[float]`                                                       | `0.6`     | Max GPU memory usage for vllm/sglang.                                                                                                             |
+| `cache_implementation`        | `Optional[str]`                                                         | `None`    | Caching strategy name (used only when `backend="torch"`).                                                                                         |
+| `batch_size`                  | `int`                                                                   | `1`       | Tokenizer/detokenizer batch size.                                                                                                                 |
+| `llm_batch_size`              | `int`                                                                   | `256`     | LLM decoding batch size.                                                                                                                          |
+| `wait_timeout`                | `float`                                                                 | `0.01`    | Async wait timeout for tokenizer/detokenizer.                                                                                                     |
+| `seed`                        | `int`                                                                   | `0`       | Random seed.                                                                                                                                      |
+| `**kwargs`                    | —                                                                       | —         | Additional backend-specific parameters.                                                                                                           |
 
 Initialization outputs a message like:
 

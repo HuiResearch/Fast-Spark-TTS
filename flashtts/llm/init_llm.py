@@ -7,7 +7,9 @@ from .base_llm import BaseLLM
 from ..import_utils import (
     is_llama_cpp_available,
     is_vllm_available,
-    is_sglang_available, is_mlx_lm_available
+    is_sglang_available,
+    is_mlx_lm_available,
+    is_trtllm_available
 )
 from ..logger import get_logger
 
@@ -16,7 +18,8 @@ logger = get_logger()
 
 def initialize_llm(
         model_path: str,
-        backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm"] = "torch",
+        tensorrt_path: Optional[str] = None,
+        backend: Literal["vllm", "llama-cpp", "sglang", "torch", "mlx-lm", "tensorrt-llm"] = "torch",
         max_length: int = 32768,
         device: Literal["cpu", "cuda", "auto"] | str = "auto",
         attn_implementation: Optional[Literal["sdpa", "flash_attention_2", "eager"]] = None,
@@ -102,5 +105,20 @@ def initialize_llm(
             stop_token_ids=stop_token_ids,
             **kwargs)
 
+    elif backend == 'tensorrt-llm':
+        if not is_trtllm_available():
+            raise NotImplementedError(
+                "tensorrt-llm is not installed. Please install it with `pip install tensorrt-llm --extra-index-url https://pypi.nvidia.com`.")
+        from .trtllm_generator import TrtLLMGenerator
+        return TrtLLMGenerator(
+            model_path=model_path,
+            tensorrt_path=tensorrt_path,
+            max_length=max_length,
+            device=device,
+            stop_tokens=stop_tokens,
+            stop_token_ids=stop_token_ids,
+            batch_size=batch_size,
+            **kwargs
+        )
     else:
         raise ValueError(f"Unknown backend: {backend}")

@@ -136,3 +136,12 @@ class BaseLLM:
                 **kwargs
         ):
             yield chunk
+
+    def shutdown(self):
+        pass
+
+    def __del__(self):
+        try:
+            self.shutdown()
+        except:
+            pass

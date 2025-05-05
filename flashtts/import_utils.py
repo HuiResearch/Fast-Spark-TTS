@@ -90,6 +90,7 @@ _vllm_available = _is_package_available("vllm")
 _sglang_available = _is_package_available("sglang")
 _llama_cpp_available = bool(importlib.util.find_spec("llama_cpp") is not None)
 _mlx_lm_available = bool(importlib.util.find_spec("mlx_lm") is not None)
+_trtllm_available = bool(importlib.util.find_spec("tensorrt_llm") is not None)
 
 
 def is_vllm_available():
@@ -103,5 +104,10 @@ def is_sglang_available():
 def is_llama_cpp_available():
     return _llama_cpp_available
 
+
 def is_mlx_lm_available():
     return _mlx_lm_available
+
+
+def is_trtllm_available():
+    return _trtllm_available
